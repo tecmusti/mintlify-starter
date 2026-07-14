@@ -1,0 +1,70 @@
+---
+title: "Authenticate with the estudjo API"
+sidebarTitle: "Authentication"
+description: "estudjo uses API keys passed in the X-Api-Key header. Learn how to create, list, and rotate your API keys for secure integration."
+---
+
+estudjo authenticates every request using API keys. You pass your key in the `X-Api-Key` HTTP header — there are no OAuth flows or session tokens to manage. Each key is scoped to your account, so all usage and credit spend are attributed to the key's owner.
+
+## Pass your key
+
+Include your API key in the `X-Api-Key` header of every request:
+
+```http
+GET /wallet/balance HTTP/1.1
+Host: v1.api.estudjo.com
+X-Api-Key: YOUR_API_KEY
+```
+
+## Get your first key
+
+You can obtain an API key in two ways:
+
+- **Dashboard** — Sign in at [estudjo.com](https://www.estudjo.com) and generate a key from your account settings. This is the easiest path when you're getting started.
+- **API** — If you already have a key, call `POST /api-keys` to create additional keys programmatically (for example, to issue per-integration keys or rotate credentials in CI).
+
+## Create a key programmatically
+
+Use an existing key to mint a new one:
+
+```bash
+curl -X POST https://v1.api.estudjo.com/api-keys \
+  -H 'X-Api-Key: YOUR_EXISTING_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "My integration"}'
+```
+
+<Warning>
+  Your full API key is shown **only once** in the `POST /api-keys` response. Copy it immediately and store it securely — it cannot be retrieved again.
+</Warning>
+
+## Rotate a compromised key
+
+If a key is leaked or compromised, revoke it immediately with `DELETE /api-keys/{id}` and create a replacement:
+
+```bash
+# Revoke the compromised key
+curl -X DELETE https://v1.api.estudjo.com/api-keys/KEY_ID \
+  -H 'X-Api-Key: YOUR_OTHER_KEY'
+
+# Create a new key
+curl -X POST https://v1.api.estudjo.com/api-keys \
+  -H 'X-Api-Key: YOUR_OTHER_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "Replacement key"}'
+```
+
+Only the revoked key is invalidated — all other keys on your account continue to work.
+
+## Security best practices
+
+- Store your API key in an environment variable (e.g. `ESTUDJO_API_KEY`) rather than hard-coding it in your source files.
+- Never commit API keys to version control. Add `.env` files to `.gitignore`.
+- Issue separate keys for separate integrations so you can revoke one without disrupting others.
+- Rotate any key immediately if you suspect it has been exposed.
+
+## Authentication errors
+
+| HTTP status | Error code | Meaning |
+|---|---|---|
+| 401 | `unauthorized` | Missing or invalid `X-Api-Key` header |

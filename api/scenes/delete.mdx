@@ -1,0 +1,63 @@
+---
+title: "DELETE /scenes/{scene_id} — Archive a Scene"
+sidebarTitle: "DELETE /scenes/{scene_id}"
+description: "DELETE /scenes/{scene_id} — soft-delete (archive) a user-created estudjo scene. Archived scenes cannot be used in generations and cannot be restored."
+---
+
+Archiving a scene removes it from [GET /scenes](/api/scenes/list) and prevents it from being used in new generations. This is a **soft delete** — the scene data is retained internally but is permanently inaccessible through the API.
+
+## Endpoint
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your API key.
+</ParamField>
+
+```
+DELETE https://v1.api.estudjo.com/scenes/{scene_id}
+```
+
+## Path Parameters
+
+<ParamField path="scene_id" type="string" required>
+  UUID of the user-created scene to archive.
+</ParamField>
+
+<Warning>
+  There is no restore endpoint. Once a scene is archived, it cannot be recovered. Create a new scene via [POST /scenes](/api/scenes/create) if you need to recreate it.
+</Warning>
+
+## Example Request
+
+```bash
+curl -X DELETE https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+### 200 — Success
+
+```json
+{ "success": true, "data": { "status": "archived" } }
+```
+
+<ResponseField name="status" type="string">
+  Always `archived` on a successful delete.
+</ResponseField>
+
+## What Archiving Affects
+
+After a scene is archived, the following changes take effect immediately across the API:
+
+| Endpoint                        | Behaviour after archiving                          |
+| ------------------------------- | -------------------------------------------------- |
+| `GET /scenes`                   | Scene no longer appears in results.                |
+| `GET /scenes/{scene_id}`        | Returns `404 not_found`.                           |
+| `POST /generate` (with this scene_id) | Returns `not_found`.                        |
+| `PUT /scenes/{scene_id}`        | Returns `404 not_found`.                           |
+
+## Errors
+
+| Code        | HTTP | Cause                                                                                                                              |
+| ----------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, or is already archived. All cases are intentionally indistinguishable. |

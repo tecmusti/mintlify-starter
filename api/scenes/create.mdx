@@ -1,0 +1,85 @@
+---
+title: "POST /scenes — Create a Scene"
+sidebarTitle: "POST /scenes"
+description: "POST /scenes — create a user-owned scene in estudjo. Specify models, categories, a name, and a prompt template. Returns the new scene_id."
+---
+
+Create a new user-owned scene in your estudjo account. Once created, the scene becomes available for use in generations and will appear in your [GET /scenes](/api/scenes/list) results with `type: user_created`. The `scene_id` is always assigned server-side.
+
+## Endpoint
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your API key.
+</ParamField>
+
+```
+POST https://v1.api.estudjo.com/scenes
+```
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Display name for the scene. Minimum 5 characters.
+</ParamField>
+
+<ParamField body="models" type="array" required>
+  One or more full model identifiers that this scene supports (e.g. `["estudjo/economic"]`). At least one entry is required.
+</ParamField>
+
+<ParamField body="categories" type="array" required>
+  One or more category slugs to associate with this scene (e.g. `["womens-clothing"]`). At least one entry is required.
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  The scene prompt. Cannot be empty. HTML is automatically converted to Markdown on ingestion.
+</ParamField>
+
+<ParamField body="description" type="string">
+  A short, optional description of the scene.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://v1.api.estudjo.com/scenes \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Bright Minimalist Studio",
+    "models": ["estudjo/economic"],
+    "categories": ["womens-clothing"],
+    "prompt": "A bright minimalist studio with soft daylight",
+    "description": "Clean studio look for apparel"
+  }'
+```
+
+## Response
+
+### 200 — Success
+
+```json
+{ "success": true, "data": { "name": "Bright Minimalist Studio", "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b", "type": "user_created" } }
+```
+
+<ResponseField name="name" type="string">
+  Display name of the newly created scene.
+</ResponseField>
+
+<ResponseField name="scene_id" type="string">
+  Server-generated UUID for the new scene. Use this to reference the scene in future requests.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Always `user_created` for scenes you create.
+</ResponseField>
+
+<Info>
+  `scene_id` is always generated server-side — you cannot specify or predict it at creation time.
+</Info>
+
+## Errors
+
+| Code            | HTTP | Cause                                                                                                          |
+| --------------- | ---- | -------------------------------------------------------------------------------------------------------------- |
+| `invalid_input` | 400  | `name` is fewer than 5 characters, `prompt` is empty, `models` or `categories` array is empty, or a category slug matched no known category. |
+| `not_found`     | 404  | A model identifier in `models` matched no known model.                                                         |

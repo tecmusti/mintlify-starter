@@ -1,0 +1,65 @@
+---
+title: "DELETE /api-keys/{id} — Revoke an API Key"
+sidebarTitle: "DELETE /api-keys/{id}"
+description: "DELETE /api-keys/{id} — permanently revoke an estudjo API key by ID. Use this to rotate credentials or remove keys that are no longer needed."
+---
+
+Permanently revoke an API key by its numeric ID. Once revoked, the key is immediately rejected for all authenticated requests — revocation cannot be undone. Use this endpoint when rotating credentials, decommissioning an integration, or responding to a suspected key leak.
+
+## Request
+
+| | |
+|---|---|
+| **Method** | `DELETE` |
+| **URL** | `https://v1.api.estudjo.com/api-keys/{id}` |
+| **Auth** | `X-Api-Key` header |
+
+### Path Parameters
+
+<ParamField path="id" type="number" required>
+  The numeric ID of the API key to revoke. Obtain this value from the `id` field returned by `GET /api-keys` or `POST /api-keys`.
+</ParamField>
+
+```bash
+curl -X DELETE https://v1.api.estudjo.com/api-keys/4 \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+### 200 — Revoked
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "api key revoked"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the key was successfully revoked.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="message" type="string">
+      Confirmation that the key has been revoked.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 404 — Not Found
+
+Returned when the supplied `id` does not match any key you can revoke. Estudjo intentionally returns the same `404` error whether the ID doesn't exist, belongs to a different account, or has already been revoked — this prevents enumeration of other accounts' key IDs.
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "not_found",
+    "message": "api key not found"
+  }
+}
+```

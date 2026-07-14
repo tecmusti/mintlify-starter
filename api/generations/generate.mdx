@@ -1,0 +1,171 @@
+---
+title: "POST /generate — Queue an AI Generation"
+sidebarTitle: "POST /generate"
+description: "POST /generate — queue an AI image or video generation. Pass a model, product image URL, scene or prompt, and receive a task_id to poll for results."
+---
+
+POST `/generate` queues an AI generation job. The model you specify determines whether image or video logic runs. The endpoint is asynchronous — it returns a `task_id` immediately; use [GET /status](/api/generations/status) to track completion.
+
+**POST** `https://v1.api.estudjo.com/generate`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+---
+
+<Tabs>
+  <Tab title="Image">
+    ## Request body
+
+    <ParamField body="model" type="string" required>
+      Model identifier (e.g. `nano-banana`).
+    </ParamField>
+
+    <ParamField body="category" type="string" required>
+      Category slug (e.g. `womens-clothing`).
+    </ParamField>
+
+    <ParamField body="aspect-ratio" type="string" required>
+      Output aspect ratio (e.g. `1:1`).
+    </ParamField>
+
+    <ParamField body="resolution" type="string" required>
+      Output resolution (e.g. `1K`).
+    </ParamField>
+
+    <ParamField body="scene" type="string" required>
+      Scene UUID. Provide either `scene` or `sceneId` — one of the two is required.
+    </ParamField>
+
+    <ParamField body="sceneId" type="string" required>
+      Alternative field name for the scene UUID. Interchangeable with `scene`.
+    </ParamField>
+
+    <ParamField body="image_url" type="string" required>
+      Publicly accessible URL of the product image to use as the generation source.
+    </ParamField>
+
+    <ParamField body="additional_data" type="object">
+      Flat object of `string:string` pairs prepended to the prompt. Send `{}` or omit this field entirely to skip.
+    </ParamField>
+
+    ## Example request
+
+    ```bash
+    curl -X POST https://v1.api.estudjo.com/generate \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "model": "nano-banana",
+        "category": "womens-clothing",
+        "aspect-ratio": "1:1",
+        "resolution": "1K",
+        "scene": "59b4a671-1b90-453e-92c3-a28ceee177af",
+        "image_url": "https://static.example.com/thumb/product-86713.jpg",
+        "additional_data": { "product_name": "White Long Dress" }
+      }'
+    ```
+  </Tab>
+
+  <Tab title="Video">
+    ## Request body
+
+    <ParamField body="model" type="string" required>
+      Video model identifier (e.g. `estudjo/economic-video`).
+    </ParamField>
+
+    <ParamField body="aspect-ratio" type="string" required>
+      Output aspect ratio (e.g. `1:1`).
+    </ParamField>
+
+    <ParamField body="resolution" type="string" required>
+      Output resolution (e.g. `480P`).
+    </ParamField>
+
+    <ParamField body="duration" type="string" required>
+      Clip duration in seconds. Accepted values: `5`, `8`, or `15`.
+    </ParamField>
+
+    <ParamField body="image_url" type="string" required>
+      Publicly accessible URL of the product image to use as the generation source.
+    </ParamField>
+
+    <ParamField body="prompt" type="string" required>
+      Direct prompt string describing the desired video output. Required unless `scene` or `sceneId` is provided. When `prompt` is present, `scene`/`sceneId` is ignored entirely.
+    </ParamField>
+
+    <ParamField body="scene" type="string" required>
+      Scene UUID. Used only when `prompt` is absent. Provide either `scene` or `sceneId`.
+    </ParamField>
+
+    <ParamField body="sceneId" type="string" required>
+      Alternative field name for the scene UUID. Used only when `prompt` is absent.
+    </ParamField>
+
+    <ParamField body="category" type="string">
+      Category slug. Falls back to the model's default category if omitted.
+    </ParamField>
+
+    <Info>
+      If `prompt` is present, `scene` and `sceneId` are ignored entirely — the prompt takes full precedence.
+    </Info>
+
+    ## Example request
+
+    ```bash
+    curl -X POST https://v1.api.estudjo.com/generate \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "model": "estudjo/economic-video",
+        "aspect-ratio": "1:1",
+        "resolution": "480P",
+        "duration": "5",
+        "prompt": "confident fashion model showcasing the outfit, slow cinematic camera pan",
+        "image_url": "https://static.example.com/thumb/product-86713.jpg"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "queued",
+    "task_id": "6bfd652d4c31261ffb8ed3424ac2775e"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the request was accepted and the job was queued.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="status" type="string">
+      Always `"queued"` on a successful response — the job has been accepted and is waiting to run.
+    </ResponseField>
+
+    <ResponseField name="task_id" type="string">
+      Unique identifier for this generation job. Save this value and pass it to [GET /status](/api/generations/status) to poll for results.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Errors
+
+| Code | HTTP | Cause |
+|---|---|---|
+| `invalid_input` | 400 | Missing required field, invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, or `additional_data` values are not flat strings |
+| `not_found` | 404 | Unknown model, or the specified scene doesn't exist or doesn't belong to your account |
+| `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
+| `provider_error` | 502 | The upstream AI provider returned an error |

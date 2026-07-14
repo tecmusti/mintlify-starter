@@ -1,0 +1,40 @@
+---
+title: "estudjo API Limits and Constraints"
+sidebarTitle: "Limits"
+description: "Hard limits for pagination, scene names, generation timing, and API key visibility in the estudjo API. Use this page for quick reference during integration."
+---
+
+The estudjo API enforces a small set of hard limits. Keep these in mind when designing pagination logic, polling intervals, and input validation in your integration.
+
+## Limits Reference
+
+| Limit | Value | Applies to |
+|---|---|---|
+| Generation history page size | 1–250 (default 250) | `GET /generations ?limit=` |
+| Scenes list page size | 1–250 (default 250) | `GET /scenes ?limit=` |
+| Scene name minimum length | 5 characters | `POST /scenes`, `PUT /scenes/{id}` |
+| Typical generation completion | 10–100 seconds | Poll `GET /status` |
+| API key visibility | Shown once at creation | `POST /api-keys` response |
+| Video duration values | `5`, `8`, or `15` (no unit suffix) | `POST /generate` (video) |
+
+## Pagination
+
+Both `GET /generations` and `GET /scenes` return a `per_page` field in the response — always use this value for pagination math instead of assuming the default.
+
+An out-of-range page returns an **empty `results` array** (not an error), with `total` still populated.
+
+<Tip>
+  Use the `total` and `per_page` values from list responses to calculate the number of pages:
+
+  ```
+  pages = ceil(total / per_page)
+  ```
+</Tip>
+
+## Generation Timing
+
+Generations are asynchronous and typically take **10–100 seconds** to complete. Poll `GET /status` every **5–10 seconds** to check for completion.
+
+<Warning>
+  Do not long-poll. Space your status requests at least 5 seconds apart to avoid triggering rate limits.
+</Warning>

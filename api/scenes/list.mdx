@@ -1,0 +1,105 @@
+---
+title: "GET /scenes — List Scenes"
+sidebarTitle: "GET /scenes"
+description: "GET /scenes — list predefined and user-created scenes. Filter by category, model, or type. Returns scene_id, name, and type for each result."
+---
+
+GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, and `type` are returned here — use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
+
+## Endpoint
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your API key.
+</ParamField>
+
+```
+GET https://v1.api.estudjo.com/scenes
+```
+
+## Query Parameters
+
+<ParamField query="category" type="string">
+  Filter by category slug (e.g. `womens-clothing`).
+</ParamField>
+
+<ParamField query="model" type="string">
+  Filter by full model identifier (e.g. `estudjo/economic-video`). URL-encode the slash as `%2F`.
+</ParamField>
+
+<ParamField query="type" type="string">
+  Pass `user_created` to list only your own scenes. Any other value returns `400`.
+</ParamField>
+
+<ParamField query="page" type="integer">
+  Page number. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  Number of results per page. Accepted range: `1`–`250`. Defaults to `250`.
+</ParamField>
+
+## Example Request
+
+```bash
+curl 'https://v1.api.estudjo.com/scenes?category=womens-clothing&type=user_created&limit=50' \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+### 200 — Success
+
+```json
+{
+  "success": true,
+  "data": {
+    "scenes": [
+      { "name": "Lit-Modern Room", "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32", "type": "predefined" },
+      { "name": "Grand Historic Interior", "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af", "type": "user_created" }
+    ],
+    "page": 1,
+    "per_page": 250,
+    "total": 2
+  }
+}
+```
+
+<ResponseField name="scenes" type="array">
+  Array of scene objects matching your query.
+
+  <Expandable title="Scene object">
+    <ResponseField name="name" type="string">
+      Display name of the scene.
+    </ResponseField>
+
+    <ResponseField name="scene_id" type="string">
+      UUID uniquely identifying the scene.
+    </ResponseField>
+
+    <ResponseField name="type" type="string">
+      Either `predefined` (estudjo-provided) or `user_created` (owned by your account).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  The current page number returned.
+</ResponseField>
+
+<ResponseField name="per_page" type="integer">
+  The number of results per page used for this response.
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of scenes matching the query across all pages.
+</ResponseField>
+
+<Info>
+  Requesting a page number beyond the last page returns an empty `scenes` array — `total` is still populated with the full count. This is not treated as an error.
+</Info>
+
+## Errors
+
+| Code            | HTTP | Cause                                                                                  |
+| --------------- | ---- | -------------------------------------------------------------------------------------- |
+| `invalid_input` | 400  | `page` is not a positive integer, `limit` is outside `1`–`250`, or `type` is not `user_created`. |

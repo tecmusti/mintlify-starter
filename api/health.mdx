@@ -1,0 +1,75 @@
+---
+title: "GET /healthz — estudjo API Health Check"
+sidebarTitle: "GET /healthz"
+description: "GET /healthz — liveness and database reachability probe. No authentication required. Use for uptime monitoring and integration health checks."
+---
+
+GET `/healthz` is a public liveness endpoint. No API key required. Use it in uptime monitors or pre-flight checks before making authenticated calls.
+
+## Request
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **URL** | `https://v1.api.estudjo.com/healthz` |
+| **Auth** | None |
+
+```bash
+curl https://v1.api.estudjo.com/healthz
+```
+
+## Responses
+
+### 200 — Healthy
+
+All systems are operational and the database is reachable.
+
+```json
+{
+  "success": true,
+  "data": {
+    "db": "ok"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the server is running and the database is reachable.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="db" type="string">
+      Database reachability status. `"ok"` when healthy.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 500 — Unhealthy
+
+The server is running but cannot reach the database.
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "db_unavailable",
+    "message": "database is unreachable"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `false` when the health check fails.
+</ResponseField>
+
+<ResponseField name="error" type="object">
+  <Expandable title="error">
+    <ResponseField name="code" type="string">
+      Machine-readable error code. `"db_unavailable"` indicates the database cannot be reached.
+    </ResponseField>
+    <ResponseField name="message" type="string">
+      Human-readable description of the failure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

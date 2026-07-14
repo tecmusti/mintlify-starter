@@ -1,0 +1,83 @@
+---
+title: "estudjo API Response Format and Error Codes"
+sidebarTitle: "Response Format"
+description: "Every estudjo API response uses a consistent JSON envelope with a success flag. Learn how to parse responses and handle errors reliably."
+---
+
+Every response from the estudjo API — success or error — uses the same JSON envelope shape, making it straightforward to handle consistently across your codebase. You never need to inspect HTTP status codes alone; the `success` flag tells you immediately whether the call succeeded.
+
+## Success Envelope
+
+When a request succeeds, the response body contains `success: true` and a `data` object holding the result payload:
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+The shape of `data` varies by endpoint and is documented on each individual endpoint reference page.
+
+## Error Envelope
+
+When a request fails, the response body contains `success: false` and an `error` object with a machine-readable `code` and a human-readable `message`:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "insufficient_credits",
+    "message": "human-readable, can change"
+  }
+}
+```
+
+<Warning>
+  Always branch on `error.code` (stable, `snake_case`), never on `error.message` — the message text can change without notice and is intended for display purposes only.
+</Warning>
+
+## HTTP Status Codes
+
+estudjo uses standard HTTP status codes alongside the JSON envelope. Use the `success` flag for branching logic, and use the HTTP status code for coarse-grained categorization (for example, in logging or alerting).
+
+| Status | Meaning                                    |
+| ------ | ------------------------------------------ |
+| 200    | Success                                    |
+| 400    | Bad request — invalid input                |
+| 401    | Unauthorized — invalid or missing API key  |
+| 402    | Payment required — insufficient credits    |
+| 404    | Not found                                  |
+| 429    | Rate limited                               |
+| 500    | Internal server error                      |
+| 502    | Upstream provider error                    |
+
+## Parsing Example
+
+The pattern below covers the full response-handling lifecycle: fetch, parse, branch on `success`, and switch on `error.code` for specific recovery logic.
+
+```javascript response-handler.js
+const res = await fetch('https://v1.api.estudjo.com/wallet/balance', {
+  headers: { 'X-Api-Key': process.env.ESTUDJO_API_KEY }
+});
+const body = await res.json();
+
+if (!body.success) {
+  switch (body.error.code) {
+    case 'insufficient_credits':
+      // top up and retry
+      break;
+    case 'not_found':
+      // handle missing resource
+      break;
+    default:
+      throw new Error(`API error: ${body.error.code}`);
+  }
+}
+
+const { balance } = body.data;
+```
+
+<Note>
+  All error codes, including every possible `error.code` value and the conditions that trigger them, are documented on the [Error Codes reference page](/reference/error-codes).
+</Note>

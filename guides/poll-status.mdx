@@ -1,0 +1,116 @@
+---
+title: "Poll Generation Status and Retrieve Results"
+sidebarTitle: "Poll Status"
+description: "Use GET /status to track an estudjo generation from queued to completed and download the finished image or video from result_urls."
+---
+
+Generations in estudjo are asynchronous. After queuing a job with `POST /generate` you receive a `task_id`. Use `GET /status` to check progress and retrieve the download URL once the generation is complete.
+
+```
+GET https://v1.api.estudjo.com/status?taskId={task_id}
+```
+
+<Info>
+  Typical completion time is **10–100 seconds** depending on model and resolution. Poll every **5–10 seconds** — do not long-poll or send requests in rapid succession.
+</Info>
+
+## Status Values
+
+A generation moves through up to three states:
+
+<AccordionGroup>
+  <Accordion title="pending — still processing">
+    The job is in the queue or actively being generated.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "pending"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="completed — ready to download">
+    The generation finished successfully. Use the URLs in `result_urls` to access your files.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "completed",
+        "result_urls": [
+          "https://example-files.s3.fr-par.scw.cloud/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
+        ]
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="failed — generation did not complete">
+    Something went wrong upstream. Check `error_message` for details and retry if appropriate.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "failed",
+        "error_message": "..."
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## About `result_urls`
+
+The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage. You can use them directly in your application (e.g. in an `<img>` or `<video>` tag) or download the files and store them in your own infrastructure — both are supported.
+
+## Polling Examples
+
+<CodeGroup>
+
+```python poll.py
+import time, requests
+
+API_KEY = "YOUR_API_KEY"
+TASK_ID = "6bfd652d4c31261ffb8ed3424ac2775e"
+
+while True:
+    r = requests.get(
+        f"https://v1.api.estudjo.com/status?taskId={TASK_ID}",
+        headers={"X-Api-Key": API_KEY}
+    )
+    data = r.json()["data"]
+    if data["status"] == "completed":
+        print("Done:", data["result_urls"])
+        break
+    elif data["status"] == "failed":
+        print("Failed:", data.get("error_message"))
+        break
+    time.sleep(5)
+```
+
+```javascript poll.js
+async function pollStatus(taskId, apiKey) {
+  while (true) {
+    const res = await fetch(
+      `https://v1.api.estudjo.com/status?taskId=${taskId}`,
+      { headers: { 'X-Api-Key': apiKey } }
+    );
+    const { data } = await res.json();
+    if (data.status === 'completed') return data.result_urls;
+    if (data.status === 'failed') throw new Error(data.error_message);
+    await new Promise(r => setTimeout(r, 5000));
+  }
+}
+```
+
+</CodeGroup>
+
+## Error Reference
+
+| Code | HTTP | Cause |
+|---|---|---|
+| `not_found` | 404 | The `taskId` does not exist or belongs to a different account |

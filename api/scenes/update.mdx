@@ -1,0 +1,77 @@
+---
+title: "PUT /scenes/{scene_id} — Update a Scene"
+sidebarTitle: "PUT /scenes/{scene_id}"
+description: "PUT /scenes/{scene_id} — update the name, description, or prompt of a user-created estudjo scene. Models and categories cannot be changed after creation."
+---
+
+Update the `name`, `description`, or `prompt` of a scene you own. The scene must be `user_created` and not archived. Models and categories are fixed at creation and cannot be modified — submit a new scene via [POST /scenes](/api/scenes/create) if you need different associations.
+
+## Endpoint
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your API key.
+</ParamField>
+
+```
+PUT https://v1.api.estudjo.com/scenes/{scene_id}
+```
+
+## Path Parameters
+
+<ParamField path="scene_id" type="string" required>
+  UUID of the user-created scene to update.
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Updated display name for the scene. Minimum 5 characters.
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  Updated prompt text for the scene. Cannot be empty.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated short description. Omit to clear the existing description.
+</ParamField>
+
+<Info>
+  `models`, `categories`, and `scene_id` cannot be changed. The `scene_id` assigned at creation is permanent.
+</Info>
+
+## Example Request
+
+```bash
+curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text."}'
+```
+
+## Response
+
+### 200 — Success
+
+```json
+{ "success": true, "data": { "name": "Bright Minimalist Studio v2", "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b", "type": "user_created" } }
+```
+
+<ResponseField name="name" type="string">
+  The updated display name of the scene.
+</ResponseField>
+
+<ResponseField name="scene_id" type="string">
+  UUID of the scene. Unchanged.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Always `user_created` for scenes you own.
+</ResponseField>
+
+## Errors
+
+| Code            | HTTP | Cause                                                                                                                                         |
+| --------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid_input` | 400  | `name` is fewer than 5 characters, `prompt` is empty, or other validation failed (same rules as [POST /scenes](/api/scenes/create)).          |
+| `not_found`     | 404  | The scene doesn't exist, belongs to another account, is predefined, or is archived. All cases are intentionally indistinguishable.            |

@@ -1,0 +1,172 @@
+---
+title: "GET /generations — Generation History"
+sidebarTitle: "GET /generations"
+description: "GET /generations — retrieve your estudjo generation history with status, result URLs, and credit ledger entries. Supports pagination and status filtering."
+---
+
+GET `/generations` returns a paginated list of all generation jobs on your account, including their current status, output URLs, and credit ledger entries. Use it to build dashboards, audit credit usage, or let users browse past results.
+
+**GET** `https://v1.api.estudjo.com/generations`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+---
+
+## Query parameters
+
+<ParamField query="page" type="integer">
+  Page number to retrieve. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  Number of results per page. Accepts `1`–`250`. Defaults to `250`.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter results to a single status. Accepted values: `pending`, `completed`, or `failed`. Omit to return all statuses.
+</ParamField>
+
+## Example request
+
+```bash
+curl 'https://v1.api.estudjo.com/generations?status=completed&limit=20&page=1' \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+---
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "generations": [
+      {
+        "task_id": "bcfeabcb2195e728c29369dc29c9cc32",
+        "status": "completed",
+        "result_urls": [
+          "https://example-files.s3.fr-par.scw.cloud/generations/bcfeabcb2195e728c29369dc29c9cc32/5587d45a00b7b4dd2fb441c1edee7ac3.png"
+        ],
+        "credits_logs": [
+          {
+            "type": "reserve",
+            "amount": "-4",
+            "balance_after": "10992.5",
+            "date_created": "2026-07-10T14:45:50.443061+03:00"
+          },
+          {
+            "type": "spend",
+            "amount": "0",
+            "balance_after": "10992.5",
+            "date_created": "2026-07-10T14:46:09.371124+03:00"
+          }
+        ],
+        "date_created": "2026-07-10T14:45:50.443061+03:00"
+      }
+    ],
+    "page": 1,
+    "per_page": 20,
+    "total": 37
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the request was valid and the response contains data.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="generations" type="array">
+      Ordered list of generation objects for the requested page.
+
+      <Expandable title="Generation object">
+        <ResponseField name="task_id" type="string">
+          Unique identifier for the generation job.
+        </ResponseField>
+
+        <ResponseField name="status" type="string">
+          Current state: `pending`, `completed`, or `failed`.
+        </ResponseField>
+
+        <ResponseField name="result_urls" type="string[]">
+          Array of output file URLs. Present only when `status` is `"completed"`.
+        </ResponseField>
+
+        <ResponseField name="error_message" type="string">
+          Human-readable failure description. Present only when `status` is `"failed"`.
+        </ResponseField>
+
+        <ResponseField name="credits_logs" type="array">
+          Ordered list of credit ledger entries for this generation.
+
+          <Expandable title="Credits log entry">
+            <ResponseField name="type" type="string">
+              Ledger entry type. See the credit log types table below for a full explanation.
+            </ResponseField>
+
+            <ResponseField name="amount" type="string">
+              Credit delta for this entry (e.g. `"-4"` or `"0"`).
+            </ResponseField>
+
+            <ResponseField name="balance_after" type="string">
+              Your account balance immediately after this entry was applied.
+            </ResponseField>
+
+            <ResponseField name="date_created" type="string">
+              ISO 8601 timestamp of when this ledger entry was recorded.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+
+        <ResponseField name="date_created" type="string">
+          ISO 8601 timestamp of when the generation job was created.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="page" type="integer">
+      The current page number returned.
+    </ResponseField>
+
+    <ResponseField name="per_page" type="integer">
+      The number of results per page actually used. This reflects the `limit` value that was applied — use `ceil(total / per_page)` to calculate the total number of pages.
+    </ResponseField>
+
+    <ResponseField name="total" type="integer">
+      Total number of generations matching the query (across all pages).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Credit log types
+
+Each generation produces one or more `credits_logs` entries that trace the full lifecycle of its credit charge.
+
+| Type | Meaning |
+|---|---|
+| `reserve` | Credits held against your balance when the job was queued |
+| `spend` | Charge confirmed — credits were consumed after a successful generation |
+| `release` | Credits refunded — the reserved amount was returned to your balance |
+
+**Reading the ledger:**
+- A single `reserve` entry with no follow-up → the generation is still **pending**.
+- `reserve` + `spend` → generation **completed** and credits were charged.
+- `reserve` + `release` → generation **failed** and the reserved credits were refunded.
+
+<Info>
+  `per_page` reflects the `limit` that was actually applied to the query (not necessarily what you passed). Always use `ceil(total / per_page)` to compute the total number of pages rather than `ceil(total / limit)`.
+</Info>
+
+---
+
+## Errors
+
+| Code | HTTP | Cause |
+|---|---|---|
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `status` is not one of `pending`, `completed`, or `failed` |

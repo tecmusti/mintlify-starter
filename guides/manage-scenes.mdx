@@ -1,0 +1,106 @@
+---
+title: "Create and Manage Custom Scenes"
+sidebarTitle: "Manage Scenes"
+description: "Build reusable scene prompt templates in estudjo. Learn how to create, update, list, and archive your own scenes for consistent AI generations."
+---
+
+Custom scenes let you define reusable prompt templates scoped to specific AI models and product categories. Once created, reference a scene by its `scene_id` in any generation request — this keeps your prompts consistent across products and makes bulk generation straightforward.
+
+## Scene Management Flow
+
+<Steps>
+  <Step title="List available scenes">
+    Retrieve predefined scenes or confirm that your own scenes exist before starting.
+
+    ```bash
+    curl 'https://v1.api.estudjo.com/scenes?type=user_created&limit=20' \
+      -H 'X-Api-Key: YOUR_API_KEY'
+    ```
+
+    You can filter by `type`:
+    - `user_created` — scenes you have built
+    - `predefined` — scenes provided by estudjo across all accounts
+  </Step>
+
+  <Step title="Create a scene">
+    Send a `POST` request with a name, target models and categories, and the prompt text.
+
+    ```bash
+    curl -X POST https://v1.api.estudjo.com/scenes \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "name": "Bright Minimalist Studio",
+        "models": ["estudjo/economic"],
+        "categories": ["womens-clothing"],
+        "prompt": "A bright minimalist studio with soft daylight",
+        "description": "Clean studio look for apparel"
+      }'
+    ```
+
+    The response includes the server-generated `scene_id`:
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "name": "Bright Minimalist Studio",
+        "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b",
+        "type": "user_created"
+      }
+    }
+    ```
+
+    <Note>
+      The `scene_id` is generated server-side and is permanent — save it to use in generation requests.
+    </Note>
+  </Step>
+
+  <Step title="Use the scene in a generation">
+    Pass the `scene_id` as the `scene` field in your `POST /generate` request body:
+
+    ```json
+    {
+      "scene": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b"
+    }
+    ```
+
+    See [Generate Image](/guides/generate-image) or [Generate Video](/guides/generate-video) for full request examples.
+  </Step>
+
+  <Step title="Update a scene">
+    You can update the `name`, `description`, and `prompt` of a scene at any time. Note that `models` and `categories` cannot be changed after creation.
+
+    ```bash
+    curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{ "name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text." }'
+    ```
+  </Step>
+
+  <Step title="Archive a scene">
+    When you no longer need a scene, archive it with a `DELETE` request.
+
+    ```bash
+    curl -X DELETE https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+      -H 'X-Api-Key: YOUR_API_KEY'
+    ```
+
+    ```json
+    { "success": true, "data": { "status": "archived" } }
+    ```
+
+    <Warning>
+      Archiving is **permanent** (soft delete) — there is no restore endpoint. Archived scenes cannot be used in new generation requests.
+    </Warning>
+  </Step>
+</Steps>
+
+## Validation Rules
+
+Keep these constraints in mind when creating or updating scenes:
+
+- **Name** must be at least **5 characters** long
+- **Prompt** cannot be empty
+- **HTML in prompts** is accepted — estudjo auto-converts it to Markdown before sending to the AI provider

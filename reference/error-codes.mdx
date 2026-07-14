@@ -1,0 +1,73 @@
+---
+title: "estudjo API Error Codes Reference"
+sidebarTitle: "Error Codes"
+description: "Complete list of estudjo API error codes, their HTTP status codes, and how to handle each one in your integration."
+---
+
+When an estudjo API call fails, the response includes an `error.code` field. Error codes are stable `snake_case` strings — branch your error handling on these, not on the `error.message`, which is human-readable and subject to change.
+
+## Error Envelope
+
+Every failed response follows this shape:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "insufficient_credits",
+    "message": "human-readable, can change"
+  }
+}
+```
+
+## Error Codes
+
+| Code | HTTP Status | Description | Resolution |
+|---|---|---|---|
+| `invalid_input` | 400 | A required field is missing, a value is out of range, or a constraint is violated | Check the request body against the endpoint's parameter requirements |
+| `unauthorized` | 401 | Missing or invalid `X-Api-Key` header | Verify your API key and pass it as `X-Api-Key` |
+| `insufficient_credits` | 402 | Your credit balance is too low to cover this generation | Top up your wallet via the estudjo dashboard |
+| `not_found` | 404 | The resource doesn't exist, belongs to another account, or has been archived | Confirm the ID is correct and the resource hasn't been deleted |
+| `rate_limited` | 429 | Too many requests in a short window | Back off and retry with exponential delay |
+| `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Check `GET /healthz`; retry after a short delay |
+| `provider_error` | 502 | The upstream AI provider failed | Retry the generation; if persistent, the prompt + scene may be too long |
+
+## Notes on Specific Codes
+
+<AccordionGroup>
+  <Accordion title="not_found (404)">
+    `not_found` deliberately makes no distinction between "wrong ID", "belongs to another account", and "archived". This is intentional — exposing that distinction would allow callers to enumerate resources they don't own.
+  </Accordion>
+  <Accordion title="provider_error (502)">
+    For video generations, `provider_error` can also indicate that the merged system prompt combined with your scene and prompt text is too long for the upstream provider. If retries fail consistently, try shortening your scene context or prompt.
+  </Accordion>
+</AccordionGroup>
+
+## Handling Errors in Code
+
+Branch on `error.code` to route each failure to the appropriate recovery path:
+
+```javascript error-handling.js
+const res = await fetch('https://v1.api.estudjo.com/generate', {
+  method: 'POST',
+  headers: {
+    'X-Api-Key': process.env.ESTUDJO_API_KEY,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(payload)
+});
+const body = await res.json();
+
+if (!body.success) {
+  const { code } = body.error;
+  if (code === 'insufficient_credits') {
+    // redirect user to top up
+  } else if (code === 'invalid_input') {
+    // surface validation error to caller
+  } else if (code === 'provider_error') {
+    // retry or alert
+  } else {
+    throw new Error(`Unexpected error: ${code}`);
+  }
+}
+```

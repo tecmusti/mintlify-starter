@@ -1,0 +1,72 @@
+---
+title: "GET /scenes/{scene_id} — Fetch a Scene"
+sidebarTitle: "GET /scenes/{scene_id}"
+description: "GET /scenes/{scene_id} — retrieve full details of a user-created scene including its prompt and description. Predefined and archived scenes return 404."
+---
+
+Fetch the full details of a user-created scene by its `scene_id`. Predefined scenes are not accessible here — their `name`, `scene_id`, and `type` are available via [GET /scenes](/api/scenes/list).
+
+## Endpoint
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your API key.
+</ParamField>
+
+```
+GET https://v1.api.estudjo.com/scenes/{scene_id}
+```
+
+## Path Parameters
+
+<ParamField path="scene_id" type="string" required>
+  UUID of the user-created scene to retrieve.
+</ParamField>
+
+## Example Request
+
+```bash
+curl https://v1.api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+### 200 — Success
+
+```json
+{
+  "success": true,
+  "data": {
+    "name": "Bright Minimalist Studio",
+    "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
+    "description": "optional short description",
+    "prompt": "A bright minimalist studio with soft daylight"
+  }
+}
+```
+
+<ResponseField name="name" type="string">
+  Display name of the scene.
+</ResponseField>
+
+<ResponseField name="scene_id" type="string">
+  UUID uniquely identifying the scene.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Short description of the scene. Returned as an empty string (`""`) when not set.
+</ResponseField>
+
+<ResponseField name="prompt" type="string">
+  The full prompt text used to define the scene.
+</ResponseField>
+
+<Info>
+  `description` is always returned as a string. When no description has been set, the value is `""` — not `null`.
+</Info>
+
+## Errors
+
+| Code        | HTTP | Cause                                                                                                                                  |
+| ----------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

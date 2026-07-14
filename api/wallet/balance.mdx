@@ -1,0 +1,51 @@
+---
+title: "GET /wallet/balance — Check Credit Balance"
+sidebarTitle: "GET /wallet/balance"
+description: "GET /wallet/balance — retrieve your current estudjo credit balance. Returns the balance as a decimal string. Requires X-Api-Key."
+---
+
+Retrieve the current credit balance for your estudjo account. Credits are consumed by generation jobs — check your balance before kicking off large or bulk requests to avoid mid-job failures.
+
+## Request
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **URL** | `https://v1.api.estudjo.com/wallet/balance` |
+| **Auth** | `X-Api-Key` header |
+
+This endpoint takes no request parameters.
+
+```bash
+curl https://v1.api.estudjo.com/wallet/balance \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+### 200 — OK
+
+```json
+{
+  "success": true,
+  "data": {
+    "balance": "96.00"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the balance was retrieved successfully.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="balance" type="string">
+      Your current credit balance as a decimal string (e.g. `"96.00"`). Returned as a string to preserve exact decimal precision.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Tip>
+  Poll this endpoint before large generation jobs to confirm you have sufficient credits. Note that a generation request that ultimately fails with an `insufficient_credits` error (`402`) may still briefly reserve credits before returning — your balance will self-correct, but factor in a short delay when checking and immediately re-submitting.
+</Tip>

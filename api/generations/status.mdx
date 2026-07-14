@@ -1,0 +1,111 @@
+---
+title: "GET /status — Poll Generation Status"
+sidebarTitle: "GET /status"
+description: "GET /status?taskId= — poll the status of a queued estudjo generation. Returns pending, completed with result_urls, or failed with an error message."
+---
+
+GET `/status` reads the generation's current state from estudjo's own record — it does not call the AI provider live. The typical response time is instant.
+
+**GET** `https://v1.api.estudjo.com/status?taskId=TASK_ID`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+---
+
+## Query parameters
+
+<ParamField query="taskId" type="string" required>
+  The `task_id` returned by [POST /generate](/api/generations/generate).
+</ParamField>
+
+## Example request
+
+```bash
+curl 'https://v1.api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+---
+
+## Response
+
+The `status` field progresses through three possible states. The shape of `data` differs by state.
+
+<Tabs>
+  <Tab title="Pending">
+    The generation is still running. Continue polling.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "pending"
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Completed">
+    The generation finished successfully. `result_urls` contains the output file(s).
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "completed",
+        "result_urls": [
+          "https://example-files.s3.fr-par.scw.cloud/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
+        ]
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Failed">
+    The generation encountered an error. `error_message` describes the failure.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "failed",
+        "error_message": "..."
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<ResponseField name="success" type="boolean">
+  `true` whenever the API call itself succeeded, regardless of generation outcome.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="status" type="string">
+      Current state of the generation: `pending`, `completed`, or `failed`.
+    </ResponseField>
+
+    <ResponseField name="result_urls" type="string[]">
+      Array of output file URLs. Present only when `status` is `"completed"`. These are permanent, public-read storage URLs — not temporary provider URLs.
+    </ResponseField>
+
+    <ResponseField name="error_message" type="string">
+      Human-readable description of what went wrong. Present only when `status` is `"failed"`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Tip>
+  Poll every 5–10 seconds. Most generations complete in 10–100 seconds. `result_urls` point to permanent public-read storage, so you can serve them directly to end users without re-hosting.
+</Tip>
+
+---
+
+## Errors
+
+| Code | HTTP | Cause |
+|---|---|---|
+| `not_found` | 404 | The `taskId` is unknown or belongs to a different account |

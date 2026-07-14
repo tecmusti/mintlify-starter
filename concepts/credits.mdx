@@ -1,0 +1,70 @@
+---
+title: "Credits and Billing in estudjo"
+sidebarTitle: "Credits"
+description: "estudjo uses a prepaid credit system. Understand how credits are reserved, charged, and refunded across image and video generations."
+---
+
+estudjo uses a **prepaid credit wallet**. You load credits in advance, and they are deducted automatically when you queue generations. There are no subscriptions or per-seat charges — you only spend credits when you generate.
+
+## How Credits Work
+
+Credit accounting happens in three stages tied to the lifecycle of each generation:
+
+1. **Reserve** — When you submit a generation via `POST /generate`, estudjo immediately reserves the required credits from your balance. The credits are held but not yet fully spent.
+2. **Spend** — When the generation completes successfully, the reserved amount is confirmed as a spend charge. The reservation converts to a permanent deduction.
+3. **Release** — If the generation fails for any reason, the reserved credits are released back to your balance in full. You are never charged for a failed generation.
+
+This reserve-then-settle model ensures your balance accurately reflects in-flight work and that failures never result in unexpected charges.
+
+## Credits Ledger
+
+Every generation object returned by `GET /generations` includes a `credits_logs` array. This array gives you a full audit trail of every credit movement associated with that generation.
+
+Each log entry has three log types:
+
+| Type      | Description                                              |
+| --------- | -------------------------------------------------------- |
+| `reserve` | Credits held at queue time                               |
+| `spend`   | Reservation confirmed on successful completion           |
+| `release` | Reservation returned to your balance on failure          |
+
+### Example: Completed Generation
+
+A successfully completed generation will have both a `reserve` and a `spend` entry:
+
+```json
+"credits_logs": [
+  { "type": "reserve", "amount": "-4", "balance_after": "10992.5", "date_created": "..." },
+  { "type": "spend",   "amount": "0",  "balance_after": "10992.5", "date_created": "..." }
+]
+```
+
+### Reading the Logs
+
+Use the combination of log entries to determine the current state of a generation's billing:
+
+- **`reserve` only** → The generation is still pending; credits are held but not yet settled.
+- **`reserve` + `spend`** → The generation completed successfully; the credit charge is kept.
+- **`reserve` + `release`** → The generation failed; your credits were fully refunded.
+
+## Checking Your Balance
+
+You can retrieve your current credit balance at any time via `GET /wallet/balance`:
+
+```bash
+curl https://v1.api.estudjo.com/wallet/balance \
+  -H 'X-Api-Key: YOUR_API_KEY'
+# { "success": true, "data": { "balance": "96.00" } }
+```
+
+The `balance` field is returned as a string to preserve decimal precision. Parse it with your language's decimal or arbitrary-precision numeric type if you need to do arithmetic.
+
+<Warning>
+  If your balance is too low to cover the cost of a generation, `POST /generate` returns a **402** response with the error code `insufficient_credits`. Top up your wallet via the [estudjo dashboard](https://estudjo.com/dashboard) before retrying.
+</Warning>
+
+## Related
+
+<Card title="Wallet Balance" icon="wallet" href="/api/wallet/balance">
+  Retrieve your current prepaid credit balance via the API.
+</Card>

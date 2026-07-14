@@ -1,47 +1,145 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with estudjo in 5 Minutes"
+sidebarTitle: "Quickstart"
+description: "Learn how to authenticate, queue your first AI image generation, and retrieve the result using the estudjo REST API."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through the complete estudjo workflow — from getting your API key to downloading a finished AI-generated product image. You'll make real API calls and have a working result in under five minutes.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
+  <Step title="Get your API key">
+    Sign in to the estudjo dashboard at [estudjo.com](https://www.estudjo.com) and copy an API key from your account settings. If you prefer to create one programmatically, see [Authentication](/authentication).
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+
+  <Step title="Check your credit balance">
+    Verify you have credits available before queuing a generation:
 
     ```bash
-    your-cli init
+    curl https://v1.api.estudjo.com/wallet/balance \
+      -H 'X-Api-Key: YOUR_API_KEY'
     ```
+
+    ```json
+    { "success": true, "data": { "balance": "96.00" } }
+    ```
+
+    The `balance` field shows your remaining credits. Top up from the estudjo dashboard if needed.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+
+  <Step title="Browse available scenes">
+    Scenes are prompt templates that define the visual style of your output. Fetch the first page to find a scene ID you'd like to use:
 
     ```bash
-    your-cli start
+    curl 'https://v1.api.estudjo.com/scenes?limit=10' \
+      -H 'X-Api-Key: YOUR_API_KEY'
     ```
+
+    ```json
+    {
+      "success": true,
+      "data": [
+        {
+          "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
+          "name": "Clean White Studio",
+          "model": "nano-banana",
+          "category": "womens-clothing"
+        },
+        {
+          "scene_id": "a3f12c88-4d71-4b0e-b901-d9e73bc44021",
+          "name": "Outdoor Lifestyle",
+          "model": "nano-banana",
+          "category": "womens-clothing"
+        }
+      ]
+    }
+    ```
+
+    Note the `scene_id` of whichever scene matches your product category — you'll use it in the next step.
+  </Step>
+
+  <Step title="Queue a generation">
+    Submit your product image URL along with the model, category, and scene you chose:
+
+    ```bash
+    curl -X POST https://v1.api.estudjo.com/generate \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "model": "nano-banana",
+        "category": "womens-clothing",
+        "aspect-ratio": "1:1",
+        "resolution": "1K",
+        "scene": "59b4a671-1b90-453e-92c3-a28ceee177af",
+        "image_url": "https://static.example.com/thumb/product-86713.jpg"
+      }'
+    ```
+
+    ```json
+    { "success": true, "data": { "status": "queued", "task_id": "6bfd652d4c31261ffb8ed3424ac2775e" } }
+    ```
+
+    <Info>
+      Save the `task_id` — it's your only handle for polling the generation status.
+    </Info>
+  </Step>
+
+  <Step title="Poll for the result">
+    Check the status of your generation by passing the `task_id` as a query parameter:
+
+    ```bash
+    curl 'https://v1.api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
+      -H 'X-Api-Key: YOUR_API_KEY'
+    ```
+
+    The response will be one of three states:
+
+    **Pending** — generation is still in progress:
+    ```json
+    { "success": true, "data": { "status": "pending", "task_id": "6bfd652d4c31261ffb8ed3424ac2775e" } }
+    ```
+
+    **Completed** — your assets are ready to download:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "completed",
+        "task_id": "6bfd652d4c31261ffb8ed3424ac2775e",
+        "result_urls": [
+          "https://cdn.estudjo.com/outputs/6bfd652d4c31261ffb8ed3424ac2775e/result_0.jpg"
+        ]
+      }
+    }
+    ```
+
+    **Failed** — something went wrong with the generation:
+    ```json
+    {
+      "success": false,
+      "data": {
+        "status": "failed",
+        "task_id": "6bfd652d4c31261ffb8ed3424ac2775e",
+        "error": "Input image could not be processed"
+      }
+    }
+    ```
+
+    <Tip>
+      Poll every 5–10 seconds. Most generations complete in 10–100 seconds depending on the model and queue depth. The `result_urls` are permanent, public-read object storage URLs — use them directly in your app or download the files for long-term storage.
+    </Tip>
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Next steps
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<CardGroup cols={3}>
+  <Card title="Generate a Video" icon="video" href="/api/generations/generate">
+    Use a video-capable model to create cinematic product clips
+  </Card>
+  <Card title="Manage Scenes" icon="layers" href="/concepts/scenes">
+    Create and reuse custom prompt templates for your brand
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/generations/generate">
+    Explore every endpoint, parameter, and response schema
+  </Card>
+</CardGroup>

@@ -1,13 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "estudjo",
+  "projectType": "api-service",
+  "projectName": "estudjo",
+  "projectDescription": "estudjo is an AI-powered image and video generation API that lets integrators create product visuals from a single product image using customizable scenes and models.",
   "theme": "luma",
-  "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
-  },
-  "favicon": "/favicon.svg",
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
   "navigation": {
     "tabs": [
       {
@@ -92,11 +90,28 @@
       }
     ]
   },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://www.estudjo.com"
-    }
-  }
+  "keyFeatures": [
+    "AI image generation from product photos using predefined and custom scenes",
+    "AI video generation with cinematic camera effects for product showcases",
+    "Reusable scene templates with per-model and per-category targeting",
+    "Credit-based billing with real-time balance checks and ledger history",
+    "Full API key lifecycle management (create, list, revoke)",
+    "Async generation with task polling via GET /status"
+  ],
+  "publicApiSurface": [
+    "GET /healthz",
+    "GET /wallet/balance",
+    "POST /api-keys",
+    "GET /api-keys",
+    "DELETE /api-keys/{id}",
+    "POST /generate (image)",
+    "POST /generate (video)",
+    "GET /status?taskId=...",
+    "GET /generations",
+    "GET /scenes",
+    "GET /scenes/{scene_id}",
+    "POST /scenes",
+    "PUT /scenes/{scene_id}",
+    "DELETE /scenes/{scene_id}"
+  ]
 }

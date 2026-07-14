@@ -1,0 +1,87 @@
+---
+title: "Understanding Scenes in estudjo"
+sidebarTitle: "Scenes"
+description: "Scenes are reusable prompt templates that define the environment and style for estudjo AI generations. Learn how predefined and custom scenes work."
+---
+
+A **scene** is a reusable prompt template that defines the environment, style, and context for an estudjo AI generation. Instead of writing a full prompt from scratch every time, you reference a scene by its `scene_id` in the `scene` field of `POST /generate`, and estudjo applies that template as the foundation for your image output.
+
+## Scene Types
+
+estudjo supports two categories of scenes:
+
+### Predefined Scenes
+
+Predefined scenes are created and maintained by estudjo and are available to all users automatically. You don't need to create or configure them — just browse the list and pick the one that fits your use case.
+
+- Listed via `GET /scenes`
+- Identified by a `scene_id` UUID
+- Cover a broad range of styles, environments, and subjects curated by the estudjo team
+
+### User-Created Scenes
+
+You can create your own scenes via the Scenes API, giving you full control over the prompt template, the models it applies to, and the categories it belongs to.
+
+- Created and managed through the Scenes API endpoints
+- Scoped to specific model identifiers and category slugs
+- Visible only within your account
+
+## Referencing a Scene in a Generation
+
+To use a scene, pass its `scene_id` UUID as the `scene` field in your `POST /generate` request body:
+
+```json
+{
+  "scene": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "category": "portrait",
+  "model": "your-model-id"
+}
+```
+
+<Info>
+  Scenes are identified **only** by `scene_id` (a UUID). There is no slug or numeric ID — always store and reference the full UUID.
+</Info>
+
+## Scenes and Categories
+
+User-created scenes are linked to one or more category slugs and model identifiers at creation time. When you submit a generation, the `category` value in your `POST /generate` request body must match one of the categories associated with the scene. If the category doesn't match, the request will be rejected.
+
+Predefined scenes also carry category associations — check the scene's metadata returned by `GET /scenes` to confirm compatible categories before generating.
+
+## Scenes and Video Generation
+
+For video generations, you can pass a `prompt` field directly in your `POST /generate` request instead of a scene reference. When a `prompt` is present, the `scene` field is **ignored entirely** — the prompt drives the generation on its own.
+
+```json
+{
+  "prompt": "A slow cinematic pan across a misty mountain range at dawn",
+  "model": "your-video-model-id"
+}
+```
+
+## Archive Behavior
+
+Archiving a scene via `DELETE /scenes/{scene_id}` performs a **soft delete**:
+
+- The scene immediately disappears from all `GET /scenes` listing responses
+- It can no longer be referenced in new `POST /generate` requests
+- **There is no restore** — once archived, the scene cannot be recovered
+
+Make sure you have an alternative scene or prompt strategy in place before archiving a scene that's actively used in your integration.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="List Scenes" icon="list" href="/api/scenes/list">
+    Browse all predefined and user-created scenes available to your account.
+  </Card>
+  <Card title="Create a Scene" icon="plus" href="/api/scenes/create">
+    Define a new custom scene scoped to your models and categories.
+  </Card>
+  <Card title="Generate Image" icon="image" href="/guides/generate-image">
+    Walk through a complete image generation request using a scene.
+  </Card>
+  <Card title="Manage Scenes Guide" icon="sliders" href="/guides/manage-scenes">
+    Learn how to organize, update, and archive your scenes over time.
+  </Card>
+</CardGroup>

@@ -1,0 +1,52 @@
+---
+title: "estudjo: AI Image & Video Generation API"
+sidebarTitle: "Introduction"
+description: "estudjo is a REST API for generating AI product images and videos from a single photo. Learn about models, scenes, and the async generation workflow."
+---
+
+estudjo is a REST API that turns a single product photo into studio-quality marketing images and short cinematic videos. Instead of expensive photo shoots or manual post-production, you send an image URL and a scene template, and estudjo's AI models handle the rest — returning permanent, ready-to-use output URLs you can plug straight into your storefront, ads, or CMS.
+
+## What you can build
+
+<CardGroup cols={2}>
+  <Card title="Image Generation" icon="image">
+    Generate studio-quality product images with predefined or custom scene templates
+  </Card>
+  <Card title="Video Generation" icon="video">
+    Create short cinematic product videos from a single photo
+  </Card>
+  <Card title="Scene Management" icon="layers">
+    Build reusable prompt templates scoped to specific models and categories
+  </Card>
+  <Card title="Credit Wallet" icon="wallet">
+    Track and manage generation spend via the wallet API
+  </Card>
+</CardGroup>
+
+## How it works
+
+<Steps>
+  <Step title="Submit a generation request">
+    Send a `POST /generate` request with your product image URL, the model you want to use, and a scene identifier that defines the visual style.
+  </Step>
+  <Step title="Receive a task ID">
+    The API responds immediately with a `task_id`. Generation happens asynchronously, so your request never blocks.
+  </Step>
+  <Step title="Poll for status">
+    Call `GET /status?taskId={task_id}` periodically until the `status` field returns `completed`.
+  </Step>
+  <Step title="Download your results">
+    Retrieve your generated assets from the `result_urls` array — these are permanent, public-read object storage URLs ready to use anywhere.
+  </Step>
+</Steps>
+
+<Note>
+  All endpoints require an `X-Api-Key` header except `GET /healthz`.
+</Note>
+
+## Base URLs
+
+| | URL |
+|---|---|
+| Dashboard | https://www.estudjo.com |
+| API | https://v1.api.estudjo.com |

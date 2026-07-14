@@ -1,0 +1,99 @@
+---
+title: "Generate AI Product Images with estudjo"
+sidebarTitle: "Generate Image"
+description: "Queue AI image generations using POST /generate. Learn required fields, scene selection, resolution options, and how to add product metadata."
+---
+
+Use `POST /generate` to queue an AI image generation. The endpoint is asynchronous — it returns a `task_id` immediately and the image is ready to download once the status transitions to `completed`.
+
+## Prerequisites
+
+Before you call `/generate`, make sure you have:
+
+- An **API key** — passed in every request as the `X-Api-Key` header
+- A **product image** hosted at a publicly accessible URL
+- A **`scene_id`** — retrieve one from `GET /scenes` (see [Manage Scenes](/guides/manage-scenes))
+
+## Required Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `model` | string | Model identifier (e.g. `nano-banana`) |
+| `category` | string | Category slug (e.g. `womens-clothing`) |
+| `aspect-ratio` | string | e.g. `1:1`, `16:9` |
+| `resolution` | string | e.g. `1K` |
+| `scene` or `sceneId` | string (UUID) | The scene to use |
+| `image_url` | string (URL) | Publicly accessible product image |
+
+## Optional Fields
+
+**`additional_data`** — a flat object of `string:string` pairs that are injected into the generation prompt as `key:value` lines. Use this to provide product-specific context such as names, materials, or colours.
+
+```json
+{
+  "product_name": "White Long Dress",
+  "material": "denim, cotton"
+}
+```
+
+<Warning>
+  `additional_data` must be a flat object — nested objects and non-string values will return a `400 invalid_input` error.
+</Warning>
+
+## Example Request
+
+```bash
+curl -X POST https://v1.api.estudjo.com/generate \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "nano-banana",
+    "category": "womens-clothing",
+    "aspect-ratio": "1:1",
+    "resolution": "1K",
+    "scene": "59b4a671-1b90-453e-92c3-a28ceee177af",
+    "image_url": "https://static.example.com/thumb/product-86713.jpg",
+    "additional_data": {
+      "product_name": "White Long Dress",
+      "material": "denim, cotton"
+    }
+  }'
+```
+
+## Response
+
+A successful request returns a `queued` status and a `task_id` you use to track the generation.
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "queued",
+    "task_id": "6bfd652d4c31261ffb8ed3424ac2775e"
+  }
+}
+```
+
+<Tip>
+  Save the `task_id` — you'll need it to poll `GET /status` and retrieve the finished image URL.
+</Tip>
+
+## Error Reference
+
+| Code | HTTP | Cause |
+|---|---|---|
+| `invalid_input` | 400 | Missing required field, bad `aspect-ratio` or `resolution` value, `category` not linked to the scene, or `additional_data` contains non-flat or non-string values |
+| `not_found` | 404 | Unknown model or scene |
+| `insufficient_credits` | 402 | Account balance too low to queue the generation |
+| `provider_error` | 502 | Upstream AI provider failed — retry after a short delay |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Poll for Status" icon="clock" href="/guides/poll-status">
+    Track your generation from queued to completed and retrieve the image URL.
+  </Card>
+  <Card title="Generation History" icon="rectangle-history" href="/api/generations/history">
+    Browse and filter past generations for your account.
+  </Card>
+</CardGroup>

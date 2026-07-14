@@ -19,7 +19,6 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
 
     Each entry in the response includes `name`, `scene_id`, and `type` (`predefined` or `user_created`).
   </Step>
-
   <Step title="Inspect a scene">
     To view the full details of a scene you created — including its `description` and `prompt` — fetch it by ID. This endpoint is only available for `user_created` scenes.
 
@@ -40,7 +39,6 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     }
     ```
   </Step>
-
   <Step title="Create a scene">
     Send a `POST` request with a name, target models and categories, and the prompt text.
 
@@ -50,7 +48,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       -H 'Content-Type: application/json' \
       -d '{
         "name": "Bright Minimalist Studio",
-        "models": ["estudjo/economic"],
+        "models": ["estudjo/eco"],
         "categories": ["womens-clothing"],
         "prompt": "A bright minimalist studio with soft daylight",
         "description": "Clean studio look for apparel"
@@ -74,7 +72,6 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       The `scene_id` is generated server-side and is permanent — save it to use in generation requests.
     </Note>
   </Step>
-
   <Step title="Use the scene in a generation">
     Pass the `scene_id` as the `scene` field in your `POST /generate` request body:
 
@@ -86,7 +83,6 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
 
     See [Generate Image](/guides/generate-image) or [Generate Video](/guides/generate-video) for full request examples.
   </Step>
-
   <Step title="Update a scene">
     You can update the `name`, `description`, and `prompt` of a scene at any time. The `models`, `categories`, and `scene_id` are immutable and cannot be changed after creation.
 
@@ -97,7 +93,6 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       -d '{ "name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text." }'
     ```
   </Step>
-
   <Step title="Archive a scene">
     When you no longer need a scene, archive it with a `DELETE` request.
 

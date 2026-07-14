@@ -38,10 +38,9 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
 {
   "success": true,
   "data": {
-    "id": "key_01j2k3m4n5p6q7r8s9t0",
     "name": "My integration",
     "key": "sk_live_xxxxxxxxxxxxxxxxxxxx",
-    "created_at": "2024-06-01T12:00:00Z"
+    "message": "save this key now — it will not be shown again"
   }
 }
 ```
@@ -100,5 +99,5 @@ Only the revoked key is invalidated — all other keys on your account continue 
 ## Authentication errors
 
 | HTTP status | Error code | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `401` | `unauthorized` | Missing or invalid `X-Api-Key` header |

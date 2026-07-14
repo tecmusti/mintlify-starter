@@ -22,11 +22,11 @@ Every generation object returned by `GET /generations` includes a `credits_logs`
 
 Each log entry has three log types:
 
-| Type      | Description                                              |
-| --------- | -------------------------------------------------------- |
-| `reserve` | Credits held at queue time                               |
-| `spend`   | Reservation confirmed on successful completion           |
-| `release` | Reservation returned to your balance on failure          |
+| Type | Description |
+| --- | --- |
+| `reserve` | Credits held at queue time |
+| `spend` | Reservation confirmed on successful completion |
+| `release` | Reservation returned to your balance on failure |
 
 ### Example: Completed Generation
 
@@ -44,8 +44,8 @@ A successfully completed generation will have both a `reserve` and a `spend` ent
 Use the combination of log entries to determine the current state of a generation's billing:
 
 - **`reserve` only** → The generation is still pending; credits are held but not yet settled.
-- **`reserve` + `spend`** → The generation completed successfully; the credit charge is kept.
-- **`reserve` + `release`** → The generation failed; your credits were fully refunded.
+- **`reserve` \+ `spend`** → The generation completed successfully; the credit charge is kept.
+- **`reserve` \+ `release`** → The generation failed; your credits were fully refunded.
 
 ## Checking Your Balance
 
@@ -60,7 +60,7 @@ curl https://v1.api.estudjo.com/wallet/balance \
 The `balance` field is returned as a string to preserve decimal precision. Parse it with your language's decimal or arbitrary-precision numeric type if you need to do arithmetic.
 
 <Warning>
-  If your balance is too low to cover the cost of a generation, `POST /generate` returns a **402** response with the error code `insufficient_credits`. Top up your wallet via the [estudjo dashboard](https://estudjo.com/dashboard) before retrying.
+  If your balance is too low to cover the cost of a generation, `POST /generate` returns a **402** response with the error code `insufficient_credits`. Top up your wallet via the [estudjo dashboard](https://www.estudjo.com/dashboard) before retrying.
 </Warning>
 
 ## Related

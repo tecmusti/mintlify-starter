@@ -6,7 +6,7 @@ description: "Use GET /status to track an estudjo generation from queued to comp
 
 Generations in estudjo are asynchronous. After queuing a job with `POST /generate` you receive a `task_id`. Use `GET /status` to check progress and retrieve the download URL once the generation is complete.
 
-```
+```text
 GET https://v1.api.estudjo.com/status?taskId={task_id}
 ```
 
@@ -62,7 +62,7 @@ A generation moves through up to three states:
 
 ## About `result_urls`
 
-The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage. You can use them directly in your application (e.g. in an `<img>` or `<video>` tag) or download the files and store them in your own infrastructure — both are supported.
+The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage. Do not use them directly in your application (e.g. in an `<img>` or `<video>` tag), download the files and store them in your own infrastructure. Generated files are available for 7 
 
 ## Polling Examples
 
@@ -109,5 +109,5 @@ async function pollStatus(taskId, apiKey) {
 ## Error Reference
 
 | Code | HTTP | Cause |
-|---|---|---|
+| --- | --- | --- |
 | `not_found` | 404 | The `taskId` does not exist or belongs to a different account |

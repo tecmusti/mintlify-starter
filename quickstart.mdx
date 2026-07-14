@@ -10,7 +10,6 @@ This guide walks you through the complete estudjo workflow — from getting your
   <Step title="Get your API key">
     Sign in to the estudjo dashboard at [estudjo.com](https://www.estudjo.com) and copy an API key from your account settings. If you prefer to create one programmatically, see [Authentication](/authentication).
   </Step>
-
   <Step title="Check your credit balance">
     Verify you have credits available before queuing a generation:
 
@@ -25,7 +24,6 @@ This guide walks you through the complete estudjo workflow — from getting your
 
     The `balance` field shows your remaining credits. Top up from the estudjo dashboard if needed.
   </Step>
-
   <Step title="Browse available scenes">
     Scenes are prompt templates that define the visual style of your output. Fetch the first page to find a scene ID you'd like to use:
 
@@ -41,14 +39,12 @@ This guide walks you through the complete estudjo workflow — from getting your
         {
           "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
           "name": "Clean White Studio",
-          "model": "nano-banana",
-          "category": "womens-clothing"
+          "type": "predefined"
         },
         {
           "scene_id": "a3f12c88-4d71-4b0e-b901-d9e73bc44021",
           "name": "Outdoor Lifestyle",
-          "model": "nano-banana",
-          "category": "womens-clothing"
+          "type": "user_created"
         }
       ]
     }
@@ -56,7 +52,6 @@ This guide walks you through the complete estudjo workflow — from getting your
 
     Note the `scene_id` of whichever scene matches your product category — you'll use it in the next step.
   </Step>
-
   <Step title="Queue a generation">
     Submit your product image URL along with the model, category, and scene you chose:
 
@@ -82,7 +77,6 @@ This guide walks you through the complete estudjo workflow — from getting your
       Save the `task_id` — it's your only handle for polling the generation status.
     </Info>
   </Step>
-
   <Step title="Poll for the result">
     Check the status of your generation by passing the `task_id` as a query parameter:
 
@@ -94,11 +88,13 @@ This guide walks you through the complete estudjo workflow — from getting your
     The response will be one of three states:
 
     **Pending** — generation is still in progress:
+
     ```json
     { "success": true, "data": { "status": "pending", "task_id": "6bfd652d4c31261ffb8ed3424ac2775e" } }
     ```
 
     **Completed** — your assets are ready to download:
+
     ```json
     {
       "success": true,
@@ -113,6 +109,7 @@ This guide walks you through the complete estudjo workflow — from getting your
     ```
 
     **Failed** — something went wrong with the generation:
+
     ```json
     {
       "success": false,
@@ -136,9 +133,11 @@ This guide walks you through the complete estudjo workflow — from getting your
   <Card title="Generate a Video" icon="video" href="/api/generations/generate">
     Use a video-capable model to create cinematic product clips
   </Card>
+
   <Card title="Manage Scenes" icon="layers" href="/concepts/scenes">
     Create and reuse custom prompt templates for your brand
   </Card>
+
   <Card title="API Reference" icon="code" href="/api/generations/generate">
     Explore every endpoint, parameter, and response schema
   </Card>

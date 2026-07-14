@@ -7,7 +7,10 @@
     "light": "#eec9bc",
     "dark": "#4fa1ab"
   },
-  "favicon": "/favicon.svg",
+  "favicon": {
+    "light": "/images/estudjo-icon-logo.png",
+    "dark": "/images/estudjo-icon-logo.png"
+  },
   "navigation": {
     "tabs": [
       {
@@ -102,5 +105,16 @@
   "logo": {
     "light": "/images/estudjo-logo.svg",
     "dark": "/images/estudjo-logo-white.svg"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Geist"
+    },
+    "body": {
+      "family": "Inter"
+    }
   }
 }

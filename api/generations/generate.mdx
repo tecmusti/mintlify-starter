@@ -19,7 +19,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     ## Request body
 
     <ParamField body="model" type="string" required>
-      Model identifier (e.g. `nano-banana`).
+      Model identifier (e.g. `estudjo/eco`).
     </ParamField>
 
     <ParamField body="category" type="string" required>
@@ -35,11 +35,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="scene" type="string" required>
-      Scene UUID. Provide either `scene` or `sceneId` — one of the two is required.
-    </ParamField>
-
-    <ParamField body="sceneId" type="string" required>
-      Alternative field name for the scene UUID. Interchangeable with `scene`.
+      Scene UUID..
     </ParamField>
 
     <ParamField body="image_url" type="string" required>
@@ -57,7 +53,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
-        "model": "nano-banana",
+        "model": "estudjo/eco",
         "category": "womens-clothing",
         "aspect-ratio": "1:1",
         "resolution": "1K",
@@ -67,7 +63,6 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       }'
     ```
   </Tab>
-
   <Tab title="Video">
     ## Request body
 
@@ -164,8 +159,8 @@ POST `/generate` queues an AI generation job. The model you specify determines w
 ## Errors
 
 | Code | HTTP | Cause |
-|---|---|---|
+| --- | --- | --- |
 | `invalid_input` | 400 | Missing required field, invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, or `additional_data` values are not flat strings |
 | `not_found` | 404 | Unknown model, or the specified scene doesn't exist or doesn't belong to your account |
 | `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
-| `provider_error` | 502 | The upstream AI provider returned an error. For video generations, this can also indicate that the merged prompt (scene text + additional data) exceeded the provider's length limit |
+| `provider_error` | 502 | The upstream AI provider returned an error. For video generations, this can also indicate that the merged prompt (scene text \+ additional data) exceeded the provider's length limit |

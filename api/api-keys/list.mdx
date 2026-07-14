@@ -8,8 +8,8 @@ Retrieve a list of all API keys associated with your estudjo account. This endpo
 
 ## Request
 
-| | |
-|---|---|
+|  |  |
+| --- | --- |
 | **Method** | `GET` |
 | **URL** | `https://v1.api.estudjo.com/api-keys` |
 | **Auth** | `X-Api-Key` header |
@@ -28,15 +28,15 @@ curl https://v1.api.estudjo.com/api-keys \
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": 4,
-      "name": "Zapier integration",
-      "last_used_at": null,
-      "revoked_at": null,
-      "date_created": "2026-07-05T12:31:07.941725+03:00"
-    }
-  ]
+  "data": {
+    "scenes": [
+      { "name": "Lit-Modern Room", "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32", "type": "predefined" },
+      { "name": "Grand Historic Interior", "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af", "type": "user_created" }
+    ],
+    "page": 1,
+    "per_page": 250,
+    "total": 2
+  }
 }
 ```
 
@@ -53,15 +53,19 @@ curl https://v1.api.estudjo.com/api-keys \
     <ResponseField name="id" type="number">
       Unique numeric identifier for the API key. Pass this value to `DELETE /api-keys/{id}` to revoke the key.
     </ResponseField>
+
     <ResponseField name="name" type="string">
       Human-readable label assigned to the key at creation time.
     </ResponseField>
+
     <ResponseField name="last_used_at" type="string | null">
       ISO 8601 timestamp of the last authenticated request made with this key, or `null` if the key has never been used.
     </ResponseField>
+
     <ResponseField name="revoked_at" type="string | null">
       ISO 8601 timestamp of when the key was revoked, or `null` if the key is still active.
     </ResponseField>
+
     <ResponseField name="date_created" type="string">
       ISO 8601 timestamp of when the key was created.
     </ResponseField>

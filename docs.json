@@ -20,8 +20,8 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "authentication",
-              "quickstart"
+              "quickstart",
+              "authentication"
             ]
           },
           {

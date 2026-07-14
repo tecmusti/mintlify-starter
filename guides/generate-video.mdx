@@ -18,13 +18,13 @@ Before sending a video request, note these differences from the image flow:
 ## Required Fields
 
 | Field | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `model` | string | Video model identifier (e.g. `estudjo/economic-video`) |
 | `aspect-ratio` | string | e.g. `1:1`, `16:9` |
 | `resolution` | string | e.g. `480P` |
 | `duration` | string | `"5"`, `"8"`, or `"15"` |
 | `image_url` | string | Publicly accessible product image |
-| `prompt` or `scene`/`sceneId` | string | Either a direct prompt string **or** a scene UUID — at least one is required |
+| `prompt` or `scene` | string | Either a direct prompt string **or** a scene UUID |
 
 <Warning>
   If both `prompt` and `scene`/`sceneId` are absent from the request body, the API returns `400 invalid_input`.
@@ -66,7 +66,7 @@ Poll `GET /status` with the returned `task_id` to track the generation and retri
 ## Error Reference
 
 | Code | HTTP | Cause |
-|---|---|---|
+| --- | --- | --- |
 | `invalid_input` | 400 | Missing required field, bad `aspect-ratio` or `resolution` value, invalid `duration` (only `"5"`, `"8"`, `"15"` accepted), or both `prompt` and `scene`/`sceneId` are absent |
 | `not_found` | 404 | Unknown model or scene |
 | `insufficient_credits` | 402 | Account balance too low to queue the generation |
@@ -78,6 +78,7 @@ Poll `GET /status` with the returned `task_id` to track the generation and retri
   <Card title="Poll for Status" icon="clock" href="/guides/poll-status">
     Track your video generation and retrieve the finished file URL.
   </Card>
+
   <Card title="Image Generation" icon="image" href="/guides/generate-image">
     Generate static product images using the same endpoint.
   </Card>

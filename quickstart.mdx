@@ -35,18 +35,21 @@ This guide walks you through the complete estudjo workflow — from getting your
     ```json
     {
       "success": true,
-      "data": [
-        {
-          "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
-          "name": "Clean White Studio",
-          "type": "predefined"
-        },
-        {
-          "scene_id": "a3f12c88-4d71-4b0e-b901-d9e73bc44021",
-          "name": "Outdoor Lifestyle",
-          "type": "user_created"
-        }
-      ]
+      "data": {
+    	"page": 1,
+    	"scenes": [
+    	    {
+    	      "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
+    	      "name": "Clean White Studio",
+    	      "type": "predefined"
+    	    },
+    	    {
+    	      "scene_id": "a3f12c88-4d71-4b0e-b901-d9e73bc44021",
+    	      "name": "Outdoor Lifestyle",
+    	      "type": "user_created"
+    	    }
+      	]
+       }
     }
     ```
 

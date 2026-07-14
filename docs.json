@@ -98,5 +98,9 @@
       "label": "Dashboard",
       "href": "https://www.estudjo.com"
     }
+  },
+  "logo": {
+    "light": "/images/estudjo-logo.svg",
+    "dark": "/images/estudjo-logo-white.svg"
   }
 }

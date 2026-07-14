@@ -1,7 +1,7 @@
 ---
-title: "Authenticate with the estudjo API"
+title: "estudjo API Key Authentication, Creation and Rotation"
 sidebarTitle: "Authentication"
-description: "estudjo uses API keys passed in the X-Api-Key header. Learn how to create, list, and rotate your API keys for secure integration."
+description: "estudjo uses API keys passed in the X-Api-Key header. Learn how to create, list, and rotate your API keys for a secure integration."
 ---
 
 estudjo authenticates every request using API keys. You pass your key in the `X-Api-Key` HTTP header — there are no OAuth flows or session tokens to manage. Each key is scoped to your account, so all usage and credit spend are attributed to the key's owner.
@@ -34,9 +34,43 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
   -d '{"name": "My integration"}'
 ```
 
+```json
+{
+  "success": true,
+  "data": {
+    "id": "key_01j2k3m4n5p6q7r8s9t0",
+    "name": "My integration",
+    "key": "sk_live_xxxxxxxxxxxxxxxxxxxx",
+    "created_at": "2024-06-01T12:00:00Z"
+  }
+}
+```
+
 <Warning>
   Your full API key is shown **only once** in the `POST /api-keys` response. Copy it immediately and store it securely — it cannot be retrieved again.
 </Warning>
+
+## List your keys
+
+Retrieve all API keys associated with your account. The `key` field is masked in list responses for security:
+
+```bash
+curl https://v1.api.estudjo.com/api-keys \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "key_01j2k3m4n5p6q7r8s9t0",
+      "name": "My integration",
+      "created_at": "2024-06-01T12:00:00Z"
+    }
+  ]
+}
+```
 
 ## Rotate a compromised key
 
@@ -67,4 +101,4 @@ Only the revoked key is invalidated — all other keys on your account continue 
 
 | HTTP status | Error code | Meaning |
 |---|---|---|
-| 401 | `unauthorized` | Missing or invalid `X-Api-Key` header |
+| `401` | `unauthorized` | Missing or invalid `X-Api-Key` header |

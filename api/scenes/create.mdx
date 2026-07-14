@@ -1,6 +1,6 @@
 ---
-title: "POST /scenes — Create a Scene"
-sidebarTitle: "POST /scenes"
+title: "estudjo API: Create a Scene with POST /scenes Endpoint"
+sidebarTitle: "Create Scene"
 description: "POST /scenes — create a user-owned scene in estudjo. Specify models, categories, a name, and a prompt template. Returns the new scene_id."
 ---
 
@@ -23,7 +23,7 @@ POST https://v1.api.estudjo.com/scenes
 </ParamField>
 
 <ParamField body="models" type="array" required>
-  One or more full model identifiers that this scene supports (e.g. `["estudjo/economic"]`). At least one entry is required.
+  One or more full model identifiers that this scene supports (e.g. `["estudjo/economic-video"]`). At least one entry is required.
 </ParamField>
 
 <ParamField body="categories" type="array" required>
@@ -46,7 +46,7 @@ curl -X POST https://v1.api.estudjo.com/scenes \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "Bright Minimalist Studio",
-    "models": ["estudjo/economic"],
+    "models": ["estudjo/economic-video"],
     "categories": ["womens-clothing"],
     "prompt": "A bright minimalist studio with soft daylight",
     "description": "Clean studio look for apparel"

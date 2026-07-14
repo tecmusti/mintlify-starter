@@ -1,5 +1,5 @@
 ---
-title: "estudjo: AI Image & Video Generation API"
+title: "Introduction to estudjo: Concepts and API Overview"
 sidebarTitle: "Introduction"
 description: "estudjo is a REST API for generating AI product images and videos from a single photo. Learn about models, scenes, and the async generation workflow."
 ---
@@ -50,3 +50,21 @@ estudjo is a REST API that turns a single product photo into studio-quality mark
 |---|---|
 | Dashboard | https://www.estudjo.com |
 | API | https://v1.api.estudjo.com |
+
+## Public API surface
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/healthz` | Health check (no auth required) |
+| `GET` | `/wallet/balance` | Retrieve your current credit balance |
+| `POST` | `/api-keys` | Create a new API key |
+| `GET` | `/api-keys` | List all API keys on your account |
+| `DELETE` | `/api-keys/{id}` | Revoke an API key by ID |
+| `POST` | `/generate` | Queue an image or video generation |
+| `GET` | `/status` | Poll generation status by `taskId` |
+| `GET` | `/generations` | List past generations |
+| `GET` | `/scenes` | List available scenes |
+| `GET` | `/scenes/{scene_id}` | Retrieve a single scene |
+| `POST` | `/scenes` | Create a custom scene |
+| `PUT` | `/scenes/{scene_id}` | Update an existing scene |
+| `DELETE` | `/scenes/{scene_id}` | Delete a scene |

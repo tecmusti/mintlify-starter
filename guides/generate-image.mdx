@@ -1,5 +1,5 @@
 ---
-title: "Generate AI Product Images with estudjo"
+title: "Generate AI Product Images from a Single Photo | estudjo"
 sidebarTitle: "Generate Image"
 description: "Queue AI image generations using POST /generate. Learn required fields, scene selection, resolution options, and how to add product metadata."
 ---
@@ -22,12 +22,12 @@ Before you call `/generate`, make sure you have:
 | `category` | string | Category slug (e.g. `womens-clothing`) |
 | `aspect-ratio` | string | e.g. `1:1`, `16:9` |
 | `resolution` | string | e.g. `1K` |
-| `scene` or `sceneId` | string (UUID) | The scene to use |
+| `scene` or `sceneId` | string (UUID) | The scene to use — both names refer to the same field; only one is required |
 | `image_url` | string (URL) | Publicly accessible product image |
 
 ## Optional Fields
 
-**`additional_data`** — a flat object of `string:string` pairs that are injected into the generation prompt as `key:value` lines. Use this to provide product-specific context such as names, materials, or colours.
+**`additional_data`** — a flat object of `string:string` pairs that are injected into the generation prompt as `key:value` lines. Use this to provide product-specific context such as names, materials, or colours. Omitting the field, passing `{}`, or passing `null` all have the same effect: no extra data is added.
 
 ```json
 {

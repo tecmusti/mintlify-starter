@@ -1,6 +1,6 @@
 ---
-title: "DELETE /scenes/{scene_id} — Archive a Scene"
-sidebarTitle: "DELETE /scenes/{scene_id}"
+title: "estudjo API: Archive a Scene via DELETE /scenes/{id}"
+sidebarTitle: "Delete Scene"
 description: "DELETE /scenes/{scene_id} — soft-delete (archive) a user-created estudjo scene. Archived scenes cannot be used in generations and cannot be restored."
 ---
 
@@ -60,4 +60,4 @@ After a scene is archived, the following changes take effect immediately across 
 
 | Code        | HTTP | Cause                                                                                                                              |
 | ----------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, or is already archived. All cases are intentionally indistinguishable. |
+| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, is already archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

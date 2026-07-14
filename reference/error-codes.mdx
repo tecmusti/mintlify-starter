@@ -1,7 +1,7 @@
 ---
-title: "estudjo API Error Codes Reference"
+title: "estudjo API Error Codes: Full Reference and Handling"
 sidebarTitle: "Error Codes"
-description: "Complete list of estudjo API error codes, their HTTP status codes, and how to handle each one in your integration."
+description: "Full reference for every estudjo API error code, its HTTP status, what triggers it, and the correct recovery strategy for each failure in your integration."
 ---
 
 When an estudjo API call fails, the response includes an `error.code` field. Error codes are stable `snake_case` strings — branch your error handling on these, not on the `error.message`, which is human-readable and subject to change.
@@ -29,7 +29,7 @@ Every failed response follows this shape:
 | `insufficient_credits` | 402 | Your credit balance is too low to cover this generation | Top up your wallet via the estudjo dashboard |
 | `not_found` | 404 | The resource doesn't exist, belongs to another account, or has been archived | Confirm the ID is correct and the resource hasn't been deleted |
 | `rate_limited` | 429 | Too many requests in a short window | Back off and retry with exponential delay |
-| `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Check `GET /healthz`; retry after a short delay |
+| `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Retry after a short delay; use exponential back-off for repeated failures |
 | `provider_error` | 502 | The upstream AI provider failed | Retry the generation; if persistent, the prompt + scene may be too long |
 
 ## Notes on Specific Codes

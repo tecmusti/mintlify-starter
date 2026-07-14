@@ -1,10 +1,10 @@
 ---
-title: "GET /healthz — estudjo API Health Check"
-sidebarTitle: "GET /healthz"
-description: "GET /healthz — liveness and database reachability probe. No authentication required. Use for uptime monitoring and integration health checks."
+title: "Health Check — estudjo API Liveness Probe"
+sidebarTitle: "Health Check"
+description: "Check whether the estudjo API is operational. Returns database reachability status. No authentication required — safe to use in uptime monitors."
 ---
 
-GET `/healthz` is a public liveness endpoint. No API key required. Use it in uptime monitors or pre-flight checks before making authenticated calls.
+`GET /healthz` is a public liveness endpoint that reports whether the estudjo API server is running and can reach its database. No API key is required. Use it in uptime monitors, load-balancer health probes, or as a pre-flight check before making authenticated calls.
 
 ## Request
 

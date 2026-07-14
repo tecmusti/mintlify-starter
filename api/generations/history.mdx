@@ -1,7 +1,7 @@
 ---
-title: "GET /generations — Generation History"
-sidebarTitle: "GET /generations"
-description: "GET /generations — retrieve your estudjo generation history with status, result URLs, and credit ledger entries. Supports pagination and status filtering."
+title: "GET /generations — List and Filter Generation History"
+sidebarTitle: "History"
+description: "GET /generations — retrieve your estudjo generation history with status, result URLs, and credit ledger entries. Supports pagination and filtering."
 ---
 
 GET `/generations` returns a paginated list of all generation jobs on your account, including their current status, output URLs, and credit ledger entries. Use it to build dashboards, audit credit usage, or let users browse past results.
@@ -48,7 +48,7 @@ curl 'https://v1.api.estudjo.com/generations?status=completed&limit=20&page=1' \
         "task_id": "bcfeabcb2195e728c29369dc29c9cc32",
         "status": "completed",
         "result_urls": [
-          "https://example-files.s3.fr-par.scw.cloud/generations/bcfeabcb2195e728c29369dc29c9cc32/5587d45a00b7b4dd2fb441c1edee7ac3.png"
+          "https://storage.estudjo.com/generations/bcfeabcb2195e728c29369dc29c9cc32/5587d45a00b7b4dd2fb441c1edee7ac3.png"
         ],
         "credits_logs": [
           {

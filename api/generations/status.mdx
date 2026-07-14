@@ -1,6 +1,6 @@
 ---
-title: "GET /status — Poll Generation Status"
-sidebarTitle: "GET /status"
+title: "GET /status — Check Generation Status by Task ID"
+sidebarTitle: "Status"
 description: "GET /status?taskId= — poll the status of a queued estudjo generation. Returns pending, completed with result_urls, or failed with an error message."
 ---
 
@@ -56,7 +56,7 @@ The `status` field progresses through three possible states. The shape of `data`
       "data": {
         "status": "completed",
         "result_urls": [
-          "https://example-files.s3.fr-par.scw.cloud/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
+          "https://storage.estudjo.com/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
         ]
       }
     }

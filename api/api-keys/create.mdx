@@ -1,10 +1,10 @@
 ---
-title: "POST /api-keys — Create an API Key"
-sidebarTitle: "POST /api-keys"
-description: "POST /api-keys — create a new estudjo API key. The full key is shown only once in the response. Requires an existing X-Api-Key."
+title: "Create API Key — estudjo API Reference"
+sidebarTitle: "Create Key"
+description: "Create a new estudjo API key. The full key is returned only once at creation — store it immediately. Requires an existing X-Api-Key header."
 ---
 
-Create a new API key for your estudjo account. You might use additional keys to isolate different integrations, rotate credentials, or grant scoped access to separate services. The full key value is returned **only once** in the creation response — store it immediately.
+Create a new API key for your estudjo account. You might use additional keys to isolate different integrations, rotate credentials, or grant scoped access to separate services. The full key value is returned **only once** in the creation response — store it immediately in a secure location.
 
 ## Request
 
@@ -37,7 +37,7 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
   "data": {
     "id": 4,
     "name": "Zapier integration",
-    "api_key": "9e6e81a6d82cffc504763463134cf2606c383eac6eac4c99",
+    "api_key": "9e6e81a6d...",
     "message": "save this key now — it will not be shown again"
   }
 }

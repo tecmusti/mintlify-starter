@@ -1,6 +1,6 @@
 ---
-title: "POST /generate — Queue an AI Generation"
-sidebarTitle: "POST /generate"
+title: "POST /generate — Queue an Image or Video Generation"
+sidebarTitle: "Generate"
 description: "POST /generate — queue an AI image or video generation. Pass a model, product image URL, scene or prompt, and receive a task_id to poll for results."
 ---
 
@@ -47,7 +47,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="additional_data" type="object">
-      Flat object of `string:string` pairs prepended to the prompt. Send `{}` or omit this field entirely to skip.
+      Flat object of `string:string` pairs. Each entry is prepended to the prompt as a `"Title Case Key: Title Case Value"` line, in key order. Omit the field, pass `null`, or pass `{}` to add no extra data.
     </ParamField>
 
     ## Example request
@@ -91,16 +91,16 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       Publicly accessible URL of the product image to use as the generation source.
     </ParamField>
 
-    <ParamField body="prompt" type="string" required>
-      Direct prompt string describing the desired video output. Required unless `scene` or `sceneId` is provided. When `prompt` is present, `scene`/`sceneId` is ignored entirely.
+    <ParamField body="prompt" type="string">
+      Direct text prompt describing the desired video output. When `prompt` is present, `scene` and `sceneId` are never consulted. Required if neither `scene` nor `sceneId` is provided.
     </ParamField>
 
-    <ParamField body="scene" type="string" required>
-      Scene UUID. Used only when `prompt` is absent. Provide either `scene` or `sceneId`.
+    <ParamField body="scene" type="string">
+      Scene UUID. Used only when `prompt` is absent. Provide either `scene` or `sceneId` — one is required if `prompt` is not supplied.
     </ParamField>
 
-    <ParamField body="sceneId" type="string" required>
-      Alternative field name for the scene UUID. Used only when `prompt` is absent.
+    <ParamField body="sceneId" type="string">
+      Alternative field name for the scene UUID. Interchangeable with `scene` when `prompt` is absent.
     </ParamField>
 
     <ParamField body="category" type="string">
@@ -168,4 +168,4 @@ POST `/generate` queues an AI generation job. The model you specify determines w
 | `invalid_input` | 400 | Missing required field, invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, or `additional_data` values are not flat strings |
 | `not_found` | 404 | Unknown model, or the specified scene doesn't exist or doesn't belong to your account |
 | `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
-| `provider_error` | 502 | The upstream AI provider returned an error |
+| `provider_error` | 502 | The upstream AI provider returned an error. For video generations, this can also indicate that the merged prompt (scene text + additional data) exceeded the provider's length limit |

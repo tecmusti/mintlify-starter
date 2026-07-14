@@ -1,6 +1,6 @@
 ---
-title: "estudjo: AI Image & Video Generation API"
-description: "estudjo turns product photos into professional AI-generated images and videos. Integrate in minutes with a simple REST API."
+title: "estudjo – AI-Powered Image and Video Generation API"
+description: "estudjo turns product photos into professional AI-generated images and videos. Integrate in minutes with a simple, well-documented REST API."
 sidebarTitle: "Home"
 ---
 
@@ -29,6 +29,6 @@ estudjo is an AI platform that transforms a single product photo into polished m
     Send a `POST /generate` request with your product image URL and a scene identifier. You'll receive a `task_id` in the response.
   </Step>
   <Step title="Poll for results">
-    Call `GET /status` with your `task_id` until the `status` field reads `completed`, then download your outputs from the `result_urls` array.
+    Call `GET /status?taskId={task_id}` until the `status` field reads `completed`, then download your outputs from the `result_urls` array.
   </Step>
 </Steps>

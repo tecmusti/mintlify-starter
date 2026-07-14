@@ -1,6 +1,6 @@
 ---
-title: "PUT /scenes/{scene_id} — Update a Scene"
-sidebarTitle: "PUT /scenes/{scene_id}"
+title: "estudjo API: Update a Scene via PUT /scenes/{scene_id}"
+sidebarTitle: "Update Scene"
 description: "PUT /scenes/{scene_id} — update the name, description, or prompt of a user-created estudjo scene. Models and categories cannot be changed after creation."
 ---
 
@@ -33,7 +33,7 @@ PUT https://v1.api.estudjo.com/scenes/{scene_id}
 </ParamField>
 
 <ParamField body="description" type="string">
-  Updated short description. Omit to clear the existing description.
+  Updated short description. Optional.
 </ParamField>
 
 <Info>
@@ -74,4 +74,4 @@ curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a
 | Code            | HTTP | Cause                                                                                                                                         |
 | --------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `invalid_input` | 400  | `name` is fewer than 5 characters, `prompt` is empty, or other validation failed (same rules as [POST /scenes](/api/scenes/create)).          |
-| `not_found`     | 404  | The scene doesn't exist, belongs to another account, is predefined, or is archived. All cases are intentionally indistinguishable.            |
+| `not_found`     | 404  | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

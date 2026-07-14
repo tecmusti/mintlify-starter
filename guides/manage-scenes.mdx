@@ -1,5 +1,5 @@
 ---
-title: "Create and Manage Custom Scenes"
+title: "Create, Update, and Archive Custom Scenes in estudjo"
 sidebarTitle: "Manage Scenes"
 description: "Build reusable scene prompt templates in estudjo. Learn how to create, update, list, and archive your own scenes for consistent AI generations."
 ---
@@ -10,16 +10,35 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
 
 <Steps>
   <Step title="List available scenes">
-    Retrieve predefined scenes or confirm that your own scenes exist before starting.
+    Retrieve all scenes available to your account, including both predefined scenes provided by estudjo and any scenes you have created.
 
     ```bash
-    curl 'https://v1.api.estudjo.com/scenes?type=user_created&limit=20' \
+    curl https://v1.api.estudjo.com/scenes \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
-    You can filter by `type`:
-    - `user_created` — scenes you have built
-    - `predefined` — scenes provided by estudjo across all accounts
+    Each entry in the response includes `name`, `scene_id`, and `type` (`predefined` or `user_created`).
+  </Step>
+
+  <Step title="Inspect a scene">
+    To view the full details of a scene you created — including its `description` and `prompt` — fetch it by ID. This endpoint is only available for `user_created` scenes.
+
+    ```bash
+    curl https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+      -H 'X-Api-Key: YOUR_API_KEY'
+    ```
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "name": "Bright Minimalist Studio",
+        "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b",
+        "description": "Clean studio look for apparel",
+        "prompt": "A bright minimalist studio with soft daylight"
+      }
+    }
+    ```
   </Step>
 
   <Step title="Create a scene">
@@ -69,7 +88,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
   </Step>
 
   <Step title="Update a scene">
-    You can update the `name`, `description`, and `prompt` of a scene at any time. Note that `models` and `categories` cannot be changed after creation.
+    You can update the `name`, `description`, and `prompt` of a scene at any time. The `models`, `categories`, and `scene_id` are immutable and cannot be changed after creation.
 
     ```bash
     curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
@@ -92,7 +111,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     ```
 
     <Warning>
-      Archiving is **permanent** (soft delete) — there is no restore endpoint. Archived scenes cannot be used in new generation requests.
+      Archiving is **permanent** — there is no restore endpoint. Archived scenes cannot be used in new generation requests.
     </Warning>
   </Step>
 </Steps>
@@ -103,4 +122,4 @@ Keep these constraints in mind when creating or updating scenes:
 
 - **Name** must be at least **5 characters** long
 - **Prompt** cannot be empty
-- **HTML in prompts** is accepted — estudjo auto-converts it to Markdown before sending to the AI provider
+- **`models` and `categories`** are set at creation time and cannot be updated afterward

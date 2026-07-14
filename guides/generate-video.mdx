@@ -1,5 +1,5 @@
 ---
-title: "Generate AI Product Videos with estudjo"
+title: "Queue AI Product Videos with estudjo: Duration and Prompts"
 sidebarTitle: "Generate Video"
 description: "Queue short cinematic product videos using POST /generate with a video model. Learn prompts, duration options, and how video differs from image generation."
 ---
@@ -10,9 +10,9 @@ estudjo can generate short cinematic product videos from a single product photo.
 
 Before sending a video request, note these differences from the image flow:
 
-- **`duration` is required** — supported values are `5`, `8`, or `15` (plain numbers, no unit suffix)
+- **`duration` is required** — supported values are `"5"`, `"8"`, or `"15"` (plain number strings, no unit suffix)
 - **`prompt` is recommended** — pass a direct prompt string instead of a scene for the most control over the output
-- **`prompt` takes priority** — when `prompt` is present, any `scene` or `sceneId` value is ignored
+- **`prompt` takes priority** — when `prompt` is present, any `scene` or `sceneId` value is ignored entirely
 - **`category` is optional** — for video models it falls back to the model-wide default when omitted
 
 ## Required Fields
@@ -22,12 +22,12 @@ Before sending a video request, note these differences from the image flow:
 | `model` | string | Video model identifier (e.g. `estudjo/economic-video`) |
 | `aspect-ratio` | string | e.g. `1:1`, `16:9` |
 | `resolution` | string | e.g. `480P` |
-| `duration` | string | `5`, `8`, or `15` |
+| `duration` | string | `"5"`, `"8"`, or `"15"` |
 | `image_url` | string | Publicly accessible product image |
-| `prompt` or `scene` | string | Either a direct prompt string **or** a scene UUID |
+| `prompt` or `scene`/`sceneId` | string | Either a direct prompt string **or** a scene UUID — at least one is required |
 
 <Warning>
-  If both `prompt` and `scene` are absent from the request body, the API returns `400 invalid_input`.
+  If both `prompt` and `scene`/`sceneId` are absent from the request body, the API returns `400 invalid_input`.
 </Warning>
 
 ## Example Request
@@ -67,14 +67,10 @@ Poll `GET /status` with the returned `task_id` to track the generation and retri
 
 | Code | HTTP | Cause |
 |---|---|---|
-| `invalid_input` | 400 | Missing required field, bad `aspect-ratio` or `resolution` value, invalid `duration` (only `5`, `8`, `15` accepted), or both `prompt` and `scene` are absent |
+| `invalid_input` | 400 | Missing required field, bad `aspect-ratio` or `resolution` value, invalid `duration` (only `"5"`, `"8"`, `"15"` accepted), or both `prompt` and `scene`/`sceneId` are absent |
 | `not_found` | 404 | Unknown model or scene |
 | `insufficient_credits` | 402 | Account balance too low to queue the generation |
-| `provider_error` | 502 | Upstream AI provider failed — can also occur when the combined system + scene/prompt text exceeds the provider's context limit |
-
-<Note>
-  For video, `provider_error` (502) can also be triggered when the combined system prompt and scene/prompt text is too long for the upstream provider. If this happens, shorten your prompt and retry.
-</Note>
+| `provider_error` | 502 | Upstream AI provider failed — retry after a short delay |
 
 ## Next Steps
 

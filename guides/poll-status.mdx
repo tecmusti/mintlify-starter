@@ -1,7 +1,7 @@
 ---
-title: "Poll Generation Status and Retrieve Results"
+title: "Poll Generation Status and Retrieve Results | estudjo"
 sidebarTitle: "Poll Status"
-description: "Use GET /status to track an estudjo generation from queued to completed and download the finished image or video from result_urls."
+description: "Use GET /status to track an estudjo generation from queued to completed and retrieve the finished image or video URL from result_urls."
 ---
 
 Generations in estudjo are asynchronous. After queuing a job with `POST /generate` you receive a `task_id`. Use `GET /status` to check progress and retrieve the download URL once the generation is complete.
@@ -24,7 +24,6 @@ A generation moves through up to three states:
 
     ```json
     {
-      "success": true,
       "data": {
         "status": "pending"
       }
@@ -37,11 +36,10 @@ A generation moves through up to three states:
 
     ```json
     {
-      "success": true,
       "data": {
         "status": "completed",
         "result_urls": [
-          "https://example-files.s3.fr-par.scw.cloud/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
+          "https://storage.estudjo.com/generations/6bfd652d4c31261ffb8ed3424ac2775e/result.jpeg"
         ]
       }
     }
@@ -53,7 +51,6 @@ A generation moves through up to three states:
 
     ```json
     {
-      "success": true,
       "data": {
         "status": "failed",
         "error_message": "..."

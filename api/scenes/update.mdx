@@ -12,8 +12,8 @@ Update the `name`, `description`, or `prompt` of a scene you own. The scene must
   Your API key.
 </ParamField>
 
-```
-PUT https://v1.api.estudjo.com/scenes/{scene_id}
+```text
+PUT https://api.estudjo.com/scenes/{scene_id}
 ```
 
 ## Path Parameters
@@ -43,7 +43,7 @@ PUT https://v1.api.estudjo.com/scenes/{scene_id}
 ## Example Request
 
 ```bash
-curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
   -H 'X-Api-Key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{"name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text."}'
@@ -71,7 +71,7 @@ curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a
 
 ## Errors
 
-| Code            | HTTP | Cause                                                                                                                                         |
-| --------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `invalid_input` | 400  | `name` is fewer than 5 characters, `prompt` is empty, or other validation failed (same rules as [POST /scenes](/api/scenes/create)).          |
-| `not_found`     | 404  | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_input` | 400 | `name` is fewer than 5 characters, `prompt` is empty, or other validation failed (same rules as [POST /scenes](/api/scenes/create)). |
+| `not_found` | 404 | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

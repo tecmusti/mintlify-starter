@@ -12,8 +12,8 @@ Fetch the full details of a user-created scene by its `scene_id`. Predefined sce
   Your API key.
 </ParamField>
 
-```
-GET https://v1.api.estudjo.com/scenes/{scene_id}
+```text
+GET https://api.estudjo.com/scenes/{scene_id}
 ```
 
 ## Path Parameters
@@ -25,7 +25,7 @@ GET https://v1.api.estudjo.com/scenes/{scene_id}
 ## Example Request
 
 ```bash
-curl https://v1.api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
+curl https://api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -67,6 +67,6 @@ curl https://v1.api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
 
 ## Errors
 
-| Code        | HTTP | Cause                                                                                                                                  |
-| ----------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `not_found` | 404 | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

@@ -4,7 +4,7 @@ sidebarTitle: "List Scenes"
 description: "GET /scenes — list predefined and user-created scenes. Filter by category, model, or type. Returns scene_id, name, and type for each result."
 ---
 
-GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, and `type` are returned here — use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
+GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, and `type` are returned here — use [GET /scenes/\{scene\_id\}](/api/scenes/get) for full details of your own scenes.
 
 ## Endpoint
 
@@ -12,8 +12,8 @@ GET /scenes returns both predefined (estudjo-provided) and user-created scenes. 
   Your API key.
 </ParamField>
 
-```
-GET https://v1.api.estudjo.com/scenes
+```text
+GET https://api.estudjo.com/scenes
 ```
 
 ## Query Parameters
@@ -41,7 +41,7 @@ GET https://v1.api.estudjo.com/scenes
 ## Example Request
 
 ```bash
-curl 'https://v1.api.estudjo.com/scenes?category=womens-clothing&type=user_created&limit=50' \
+curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&limit=50' \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -100,6 +100,6 @@ curl 'https://v1.api.estudjo.com/scenes?category=womens-clothing&type=user_creat
 
 ## Errors
 
-| Code            | HTTP | Cause                                                                                  |
-| --------------- | ---- | -------------------------------------------------------------------------------------- |
-| `invalid_input` | 400  | `page` is not a positive integer, `limit` is outside `1`–`250`, or `type` is not `user_created`. |
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `type` is not `user_created`. |

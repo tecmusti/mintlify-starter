@@ -12,8 +12,8 @@ Create a new user-owned scene in your estudjo account. Once created, the scene b
   Your API key.
 </ParamField>
 
-```
-POST https://v1.api.estudjo.com/scenes
+```text
+POST https://api.estudjo.com/scenes
 ```
 
 ## Request Body
@@ -41,7 +41,7 @@ POST https://v1.api.estudjo.com/scenes
 ## Example Request
 
 ```bash
-curl -X POST https://v1.api.estudjo.com/scenes \
+curl -X POST https://api.estudjo.com/scenes \
   -H 'X-Api-Key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -79,7 +79,7 @@ curl -X POST https://v1.api.estudjo.com/scenes \
 
 ## Errors
 
-| Code            | HTTP | Cause                                                                                                          |
-| --------------- | ---- | -------------------------------------------------------------------------------------------------------------- |
-| `invalid_input` | 400  | `name` is fewer than 5 characters, `prompt` is empty, `models` or `categories` array is empty, or a category slug matched no known category. |
-| `not_found`     | 404  | A model identifier in `models` matched no known model.                                                         |
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_input` | 400 | `name` is fewer than 5 characters, `prompt` is empty, `models` or `categories` array is empty, or a category slug matched no known category. |
+| `not_found` | 404 | A model identifier in `models` matched no known model. |

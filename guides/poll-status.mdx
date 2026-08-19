@@ -7,7 +7,7 @@ description: "Use GET /status to track an estudjo generation from queued to comp
 Generations in estudjo are asynchronous. After queuing a job with `POST /generate` you receive a `task_id`. Use `GET /status` to check progress and retrieve the download URL once the generation is complete.
 
 ```text
-GET https://v1.api.estudjo.com/status?taskId={task_id}
+GET https://api.estudjo.com/status?taskId={task_id}
 ```
 
 <Info>
@@ -76,7 +76,7 @@ TASK_ID = "6bfd652d4c31261ffb8ed3424ac2775e"
 
 while True:
     r = requests.get(
-        f"https://v1.api.estudjo.com/status?taskId={TASK_ID}",
+        f"https://api.estudjo.com/status?taskId={TASK_ID}",
         headers={"X-Api-Key": API_KEY}
     )
     data = r.json()["data"]
@@ -93,7 +93,7 @@ while True:
 async function pollStatus(taskId, apiKey) {
   while (true) {
     const res = await fetch(
-      `https://v1.api.estudjo.com/status?taskId=${taskId}`,
+      `https://api.estudjo.com/status?taskId=${taskId}`,
       { headers: { 'X-Api-Key': apiKey } }
     );
     const { data } = await res.json();

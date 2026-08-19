@@ -41,23 +41,23 @@ When a request fails, the response body contains `success: false` and an `error`
 
 estudjo uses standard HTTP status codes alongside the JSON envelope. Use the `success` flag for branching logic, and use the HTTP status code for coarse-grained categorization (for example, in logging or alerting).
 
-| Status | Meaning                                    |
-| ------ | ------------------------------------------ |
-| 200    | Success                                    |
-| 400    | Bad request — invalid input                |
-| 401    | Unauthorized — invalid or missing API key  |
-| 402    | Payment required — insufficient credits    |
-| 404    | Not found                                  |
-| 429    | Rate limited                               |
-| 500    | Internal server error                      |
-| 502    | Upstream provider error                    |
+| Status | Meaning |
+| --- | --- |
+| 200 | Success |
+| 400 | Bad request — invalid input |
+| 401 | Unauthorized — invalid or missing API key |
+| 402 | Payment required — insufficient credits |
+| 404 | Not found |
+| 429 | Rate limited |
+| 500 | Internal server error |
+| 502 | Upstream provider error |
 
 ## Parsing Example
 
 The pattern below covers the full response-handling lifecycle: fetch, parse, branch on `success`, and switch on `error.code` for specific recovery logic.
 
 ```javascript response-handler.js
-const res = await fetch('https://v1.api.estudjo.com/wallet/balance', {
+const res = await fetch('https://api.estudjo.com/wallet/balance', {
   headers: { 'X-Api-Key': process.env.ESTUDJO_API_KEY }
 });
 const body = await res.json();

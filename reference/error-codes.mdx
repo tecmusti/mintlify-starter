@@ -23,14 +23,14 @@ Every failed response follows this shape:
 ## Error Codes
 
 | Code | HTTP Status | Description | Resolution |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `invalid_input` | 400 | A required field is missing, a value is out of range, or a constraint is violated | Check the request body against the endpoint's parameter requirements |
 | `unauthorized` | 401 | Missing or invalid `X-Api-Key` header | Verify your API key and pass it as `X-Api-Key` |
 | `insufficient_credits` | 402 | Your credit balance is too low to cover this generation | Top up your wallet via the estudjo dashboard |
 | `not_found` | 404 | The resource doesn't exist, belongs to another account, or has been archived | Confirm the ID is correct and the resource hasn't been deleted |
 | `rate_limited` | 429 | Too many requests in a short window | Back off and retry with exponential delay |
 | `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Retry after a short delay; use exponential back-off for repeated failures |
-| `provider_error` | 502 | The upstream AI provider failed | Retry the generation; if persistent, the prompt + scene may be too long |
+| `provider_error` | 502 | The upstream AI provider failed | Retry the generation; if persistent, the prompt \+ scene may be too long |
 
 ## Notes on Specific Codes
 
@@ -38,6 +38,7 @@ Every failed response follows this shape:
   <Accordion title="not_found (404)">
     `not_found` deliberately makes no distinction between "wrong ID", "belongs to another account", and "archived". This is intentional — exposing that distinction would allow callers to enumerate resources they don't own.
   </Accordion>
+
   <Accordion title="provider_error (502)">
     For video generations, `provider_error` can also indicate that the merged system prompt combined with your scene and prompt text is too long for the upstream provider. If retries fail consistently, try shortening your scene context or prompt.
   </Accordion>
@@ -48,7 +49,7 @@ Every failed response follows this shape:
 Branch on `error.code` to route each failure to the appropriate recovery path:
 
 ```javascript error-handling.js
-const res = await fetch('https://v1.api.estudjo.com/generate', {
+const res = await fetch('https://api.estudjo.com/generate', {
   method: 'POST',
   headers: {
     'X-Api-Key': process.env.ESTUDJO_API_KEY,

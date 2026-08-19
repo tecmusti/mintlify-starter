@@ -13,7 +13,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     Retrieve all scenes available to your account, including both predefined scenes provided by estudjo and any scenes you have created.
 
     ```bash
-    curl https://v1.api.estudjo.com/scenes \
+    curl https://api.estudjo.com/scenes \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
@@ -23,7 +23,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     To view the full details of a scene you created — including its `description` and `prompt` — fetch it by ID. This endpoint is only available for `user_created` scenes.
 
     ```bash
-    curl https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+    curl https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
@@ -43,12 +43,12 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     Send a `POST` request with a name, target models and categories, and the prompt text.
 
     ```bash
-    curl -X POST https://v1.api.estudjo.com/scenes \
+    curl -X POST https://api.estudjo.com/scenes \
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
         "name": "Bright Minimalist Studio",
-        "models": ["estudjo/eco"],
+        "models": ["estudjo/economic"],
         "categories": ["womens-clothing"],
         "prompt": "A bright minimalist studio with soft daylight",
         "description": "Clean studio look for apparel"
@@ -87,7 +87,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     You can update the `name`, `description`, and `prompt` of a scene at any time. The `models`, `categories`, and `scene_id` are immutable and cannot be changed after creation.
 
     ```bash
-    curl -X PUT https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+    curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{ "name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text." }'
@@ -97,7 +97,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     When you no longer need a scene, archive it with a `DELETE` request.
 
     ```bash
-    curl -X DELETE https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
+    curl -X DELETE https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 

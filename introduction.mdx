@@ -12,12 +12,15 @@ estudjo is a REST API that turns a single product photo into studio-quality mark
   <Card title="Image Generation" icon="image">
     Generate studio-quality product images with predefined or custom scene templates
   </Card>
+
   <Card title="Video Generation" icon="video">
     Create short cinematic product videos from a single photo
   </Card>
+
   <Card title="Scene Management" icon="layers">
     Build reusable prompt templates scoped to specific models and categories
   </Card>
+
   <Card title="Credit Wallet" icon="wallet">
     Track and manage generation spend via the wallet API
   </Card>
@@ -46,16 +49,15 @@ estudjo is a REST API that turns a single product photo into studio-quality mark
 
 ## Base URLs
 
-| | URL |
-|---|---|
-| Dashboard | https://www.estudjo.com |
-| API | https://v1.api.estudjo.com |
+|  | URL |
+| --- | --- |
+| Dashboard | [https://www.estudjo.com](https://www.estudjo.com) |
+| API | [https://api.estudjo.com](https://api.estudjo.com) |
 
 ## Public API surface
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/healthz` | Health check (no auth required) |
+| --- | --- | --- |
 | `GET` | `/wallet/balance` | Retrieve your current credit balance |
 | `POST` | `/api-keys` | Create a new API key |
 | `GET` | `/api-keys` | List all API keys on your account |

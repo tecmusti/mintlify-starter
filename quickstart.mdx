@@ -14,7 +14,7 @@ This guide walks you through the complete estudjo workflow — from getting your
     Verify you have credits available before queuing a generation:
 
     ```bash
-    curl https://v1.api.estudjo.com/wallet/balance \
+    curl https://api.estudjo.com/wallet/balance \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
@@ -28,7 +28,7 @@ This guide walks you through the complete estudjo workflow — from getting your
     Scenes are prompt templates that define the visual style of your output. Fetch the first page to find a scene ID you'd like to use:
 
     ```bash
-    curl 'https://v1.api.estudjo.com/scenes?limit=10' \
+    curl 'https://api.estudjo.com/scenes?limit=10' \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
@@ -61,11 +61,11 @@ This guide walks you through the complete estudjo workflow — from getting your
     Submit your product image URL along with the model, category, and scene you chose:
 
     ```bash
-    curl -X POST https://v1.api.estudjo.com/generate \
+    curl -X POST https://api.estudjo.com/generate \
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
-        "model": "estudjo/eco",
+        "model": "estudjo/economi",
         "category": "womens-clothing",
         "aspect-ratio": "1:1",
         "resolution": "1K",
@@ -86,7 +86,7 @@ This guide walks you through the complete estudjo workflow — from getting your
     Check the status of your generation by passing the `task_id` as a query parameter:
 
     ```bash
-    curl 'https://v1.api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
+    curl 'https://api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 

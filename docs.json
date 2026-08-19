@@ -55,9 +55,7 @@
         "groups": [
           {
             "group": "Health",
-            "pages": [
-              "api/health"
-            ]
+            "pages": []
           },
           {
             "group": "API Keys",

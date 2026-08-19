@@ -28,7 +28,7 @@ You can obtain an API key in two ways:
 Use an existing key to mint a new one:
 
 ```bash
-curl -X POST https://v1.api.estudjo.com/api-keys \
+curl -X POST https://api.estudjo.com/api-keys \
   -H 'X-Api-Key: YOUR_EXISTING_KEY' \
   -H 'Content-Type: application/json' \
   -d '{"name": "My integration"}'
@@ -39,7 +39,7 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
   "success": true,
   "data": {
     "name": "My integration",
-    "key": "sk_live_xxxxxxxxxxxxxxxxxxxx",
+    "key": "xxxxxxxxxxxxxxxxxxxx",
     "message": "save this key now — it will not be shown again"
   }
 }
@@ -54,7 +54,7 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
 Retrieve all API keys associated with your account. The `key` field is masked in list responses for security:
 
 ```bash
-curl https://v1.api.estudjo.com/api-keys \
+curl https://api.estudjo.com/api-keys \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -76,11 +76,11 @@ If a key is leaked or compromised, revoke it immediately with `DELETE /api-keys/
 
 ```bash
 # Revoke the compromised key
-curl -X DELETE https://v1.api.estudjo.com/api-keys/KEY_ID \
+curl -X DELETE https://api.estudjo.com/api-keys/KEY_ID \
   -H 'X-Api-Key: YOUR_OTHER_KEY'
 
 # Create a new key
-curl -X POST https://v1.api.estudjo.com/api-keys \
+curl -X POST https://api.estudjo.com/api-keys \
   -H 'X-Api-Key: YOUR_OTHER_KEY' \
   -H 'Content-Type: application/json' \
   -d '{"name": "Replacement key"}'

@@ -8,10 +8,10 @@ Permanently revoke an API key by its numeric ID. Once revoked, the key is immedi
 
 ## Request
 
-| | |
-|---|---|
+|  |  |
+| --- | --- |
 | **Method** | `DELETE` |
-| **URL** | `https://v1.api.estudjo.com/api-keys/{id}` |
+| **URL** | `https://api.estudjo.com/api-keys/{id}` |
 | **Auth** | `X-Api-Key` header |
 
 ### Path Parameters
@@ -21,7 +21,7 @@ Permanently revoke an API key by its numeric ID. Once revoked, the key is immedi
 </ParamField>
 
 ```bash
-curl -X DELETE https://v1.api.estudjo.com/api-keys/4 \
+curl -X DELETE https://api.estudjo.com/api-keys/4 \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 

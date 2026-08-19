@@ -11,13 +11,13 @@ Retrieve a list of all API keys associated with your estudjo account. This endpo
 |  |  |
 | --- | --- |
 | **Method** | `GET` |
-| **URL** | `https://v1.api.estudjo.com/api-keys` |
+| **URL** | `https://api.estudjo.com/api-keys` |
 | **Auth** | `X-Api-Key` header |
 
 This endpoint takes no request parameters.
 
 ```bash
-curl https://v1.api.estudjo.com/api-keys \
+curl https://api.estudjo.com/api-keys \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -28,15 +28,14 @@ curl https://v1.api.estudjo.com/api-keys \
 ```json
 {
   "success": true,
-  "data": {
-    "scenes": [
-      { "name": "Lit-Modern Room", "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32", "type": "predefined" },
-      { "name": "Grand Historic Interior", "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af", "type": "user_created" }
-    ],
-    "page": 1,
-    "per_page": 250,
-    "total": 2
-  }
+  "data": [
+    {
+      "name": "Zapier integration",
+      "last_used_at": null,
+      "revoked_at": null,
+      "date_created": "2026-07-05T12:31:07.941725+03:00"
+    }
+  ]
 }
 ```
 

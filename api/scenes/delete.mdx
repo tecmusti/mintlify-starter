@@ -12,8 +12,8 @@ Archiving a scene removes it from [GET /scenes](/api/scenes/list) and prevents i
   Your API key.
 </ParamField>
 
-```
-DELETE https://v1.api.estudjo.com/scenes/{scene_id}
+```text
+DELETE https://api.estudjo.com/scenes/{scene_id}
 ```
 
 ## Path Parameters
@@ -49,15 +49,15 @@ curl -X DELETE https://v1.api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4
 
 After a scene is archived, the following changes take effect immediately across the API:
 
-| Endpoint                        | Behaviour after archiving                          |
-| ------------------------------- | -------------------------------------------------- |
-| `GET /scenes`                   | Scene no longer appears in results.                |
-| `GET /scenes/{scene_id}`        | Returns `404 not_found`.                           |
-| `POST /generate` (with this scene_id) | Returns `not_found`.                        |
-| `PUT /scenes/{scene_id}`        | Returns `404 not_found`.                           |
+| Endpoint | Behaviour after archiving |
+| --- | --- |
+| `GET /scenes` | Scene no longer appears in results. |
+| `GET /scenes/{scene_id}` | Returns `404 not_found`. |
+| `POST /generate` (with this scene\_id) | Returns `not_found`. |
+| `PUT /scenes/{scene_id}` | Returns `404 not_found`. |
 
 ## Errors
 
-| Code        | HTTP | Cause                                                                                                                              |
-| ----------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `not_found` | 404  | The scene doesn't exist, belongs to another account, is predefined, is already archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `not_found` | 404 | The scene doesn't exist, belongs to another account, is predefined, is already archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

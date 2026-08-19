@@ -3,9 +3,9 @@
   "name": "estudjo",
   "theme": "aspen",
   "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
+    "primary": "#f26430",
+    "light": "#fffaea",
+    "dark": "#0a0a0a"
   },
   "favicon": {
     "light": "/images/estudjo-icon-logo.png",
@@ -113,6 +113,11 @@
     },
     "body": {
       "family": "Inter"
+    }
+  },
+  "background": {
+    "color": {
+      "dark": "#0a0a0a"
     }
   }
 }

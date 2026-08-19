@@ -54,10 +54,6 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "Health",
-            "pages": []
-          },
-          {
             "group": "API Keys",
             "pages": [
               "api/api-keys/create",

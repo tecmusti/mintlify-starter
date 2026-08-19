@@ -6,7 +6,7 @@ description: "POST /generate — queue an AI image or video generation. Pass a m
 
 POST `/generate` queues an AI generation job. The model you specify determines whether image or video logic runs. The endpoint is asynchronous — it returns a `task_id` immediately; use [GET /status](/api/generations/status) to track completion.
 
-**POST** `https://v1.api.estudjo.com/generate`
+**POST** `https://api.estudjo.com/generate`
 
 <ParamField header="X-Api-Key" type="string" required>
   Your estudjo API key.
@@ -49,7 +49,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     ## Example request
 
     ```bash
-    curl -X POST https://v1.api.estudjo.com/generate \
+    curl -X POST https://api.estudjo.com/generate \
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{

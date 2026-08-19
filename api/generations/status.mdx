@@ -6,7 +6,7 @@ description: "GET /status?taskId= — poll the status of a queued estudjo genera
 
 GET `/status` reads the generation's current state from estudjo's own record — it does not call the AI provider live. The typical response time is instant.
 
-**GET** `https://v1.api.estudjo.com/status?taskId=TASK_ID`
+**GET** `https://api.estudjo.com/status?taskId=TASK_ID`
 
 <ParamField header="X-Api-Key" type="string" required>
   Your estudjo API key.
@@ -23,7 +23,7 @@ GET `/status` reads the generation's current state from estudjo's own record —
 ## Example request
 
 ```bash
-curl 'https://v1.api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
+curl 'https://api.estudjo.com/status?taskId=6bfd652d4c31261ffb8ed3424ac2775e' \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -46,7 +46,6 @@ The `status` field progresses through three possible states. The shape of `data`
     }
     ```
   </Tab>
-
   <Tab title="Completed">
     The generation finished successfully. `result_urls` contains the output file(s).
 
@@ -62,7 +61,6 @@ The `status` field progresses through three possible states. The shape of `data`
     }
     ```
   </Tab>
-
   <Tab title="Failed">
     The generation encountered an error. `error_message` describes the failure.
 
@@ -107,5 +105,5 @@ The `status` field progresses through three possible states. The shape of `data`
 ## Errors
 
 | Code | HTTP | Cause |
-|---|---|---|
+| --- | --- | --- |
 | `not_found` | 404 | The `taskId` is unknown or belongs to a different account |

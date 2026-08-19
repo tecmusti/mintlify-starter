@@ -6,7 +6,7 @@ description: "GET /generations — retrieve your estudjo generation history with
 
 GET `/generations` returns a paginated list of all generation jobs on your account, including their current status, output URLs, and credit ledger entries. Use it to build dashboards, audit credit usage, or let users browse past results.
 
-**GET** `https://v1.api.estudjo.com/generations`
+**GET** `https://api.estudjo.com/generations`
 
 <ParamField header="X-Api-Key" type="string" required>
   Your estudjo API key.
@@ -31,7 +31,7 @@ GET `/generations` returns a paginated list of all generation jobs on your accou
 ## Example request
 
 ```bash
-curl 'https://v1.api.estudjo.com/generations?status=completed&limit=20&page=1' \
+curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -149,15 +149,16 @@ curl 'https://v1.api.estudjo.com/generations?status=completed&limit=20&page=1' \
 Each generation produces one or more `credits_logs` entries that trace the full lifecycle of its credit charge.
 
 | Type | Meaning |
-|---|---|
+| --- | --- |
 | `reserve` | Credits held against your balance when the job was queued |
 | `spend` | Charge confirmed — credits were consumed after a successful generation |
 | `release` | Credits refunded — the reserved amount was returned to your balance |
 
 **Reading the ledger:**
+
 - A single `reserve` entry with no follow-up → the generation is still **pending**.
-- `reserve` + `spend` → generation **completed** and credits were charged.
-- `reserve` + `release` → generation **failed** and the reserved credits were refunded.
+- `reserve` \+ `spend` → generation **completed** and credits were charged.
+- `reserve` \+ `release` → generation **failed** and the reserved credits were refunded.
 
 <Info>
   `per_page` reflects the `limit` that was actually applied to the query (not necessarily what you passed). Always use `ceil(total / per_page)` to compute the total number of pages rather than `ceil(total / limit)`.
@@ -168,5 +169,5 @@ Each generation produces one or more `credits_logs` entries that trace the full 
 ## Errors
 
 | Code | HTTP | Cause |
-|---|---|---|
+| --- | --- | --- |
 | `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `status` is not one of `pending`, `completed`, or `failed` |

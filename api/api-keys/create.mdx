@@ -8,10 +8,10 @@ Create a new API key for your estudjo account. You might use additional keys to 
 
 ## Request
 
-| | |
-|---|---|
+|  |  |
+| --- | --- |
 | **Method** | `POST` |
-| **URL** | `https://v1.api.estudjo.com/api-keys` |
+| **URL** | `https://api.estudjo.com/api-keys` |
 | **Auth** | `X-Api-Key` header |
 
 ### Body
@@ -21,7 +21,7 @@ Create a new API key for your estudjo account. You might use additional keys to 
 </ParamField>
 
 ```bash
-curl -X POST https://v1.api.estudjo.com/api-keys \
+curl -X POST https://api.estudjo.com/api-keys \
   -H 'X-Api-Key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{"name": "Zapier integration"}'
@@ -56,12 +56,15 @@ curl -X POST https://v1.api.estudjo.com/api-keys \
     <ResponseField name="id" type="number">
       Unique numeric identifier for the API key. Use this value when revoking the key via `DELETE /api-keys/{id}`.
     </ResponseField>
+
     <ResponseField name="name" type="string">
       The human-readable label you provided in the request body.
     </ResponseField>
+
     <ResponseField name="api_key" type="string">
       The full API key value. **Shown only once** — it cannot be retrieved after this response. Store it securely immediately.
     </ResponseField>
+
     <ResponseField name="message" type="string">
       A plain-language reminder that the key will not be shown again.
     </ResponseField>

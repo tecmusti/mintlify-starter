@@ -60,7 +60,7 @@ curl https://api.estudjo.com/wallet/balance \
 The `balance` field is returned as a string to preserve decimal precision. Parse it with your language's decimal or arbitrary-precision numeric type if you need to do arithmetic.
 
 <Warning>
-  If your balance is too low to cover the cost of a generation, `POST /generate` returns a **402** response with the error code `insufficient_credits`. Top up your wallet via the [estudjo dashboard](https://www.estudjo.com/dashboard) before retrying.
+  If your balance is too low to cover the cost of a generation, `POST /generate` returns a **402** response with the error code `insufficient_credits`. Top up your wallet via the [estudjo dashboard](https://www.estudjo.com/app/dashboard) before retrying.
 </Warning>
 
 ## Related

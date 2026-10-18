@@ -18,7 +18,7 @@ Before you call `/generate`, make sure you have:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `model` | string | Model identifier (e.g. `estudjo/eco`) |
+| `model` | string | Model identifier (e.g. `estudjo/economic`) |
 | `aspect-ratio` | string | e.g. `1:1`, `3:4` |
 | `resolution` | string | e.g. `1K` |
 | `image_urls` | string[] (URLs) | One or more publicly accessible product images |
@@ -35,7 +35,7 @@ Pass **`prompt`** to skip scenes entirely. When `prompt` is set, `category` and 
 
 ```json
 {
-  "model": "estudjo/eco",
+  "model": "estudjo/economic",
   "aspect-ratio": "1:1",
   "resolution": "1K",
   "prompt": "Product on a marble table, soft morning light, minimalist studio",
@@ -65,7 +65,7 @@ curl -X POST https://api.estudjo.com/generate \
   -H 'X-Api-Key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
-    "model": "estudjo/eco",
+    "model": "estudjo/economic",
     "category": "womens-clothing",
     "aspect-ratio": "1:1",
     "resolution": "1K",

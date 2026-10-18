@@ -42,13 +42,15 @@ This guide walks you through the complete estudjo workflow — from getting your
     	"scenes": [
     	    {
     	      "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
-    	      "name": "Clean White Studio",
-    	      "type": "predefined"
+    	      "name": { "en": "Clean White Studio", "tr": "Temiz Beyaz Stüdyo" },
+    	      "type": "predefined",
+    	      "characters": 0
     	    },
     	    {
     	      "scene_id": "a3f12c88-4d71-4b0e-b901-d9e73bc44021",
-    	      "name": "Outdoor Lifestyle",
-    	      "type": "user_created"
+    	      "name": { "en": "Outdoor Lifestyle" },
+    	      "type": "user_created",
+    	      "characters": 0
     	    }
       	]
        }
@@ -65,7 +67,7 @@ This guide walks you through the complete estudjo workflow — from getting your
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
-        "model": "estudjo/economi",
+        "model": "estudjo/economic",
         "category": "womens-clothing",
         "aspect-ratio": "1:1",
         "resolution": "1K",
@@ -95,7 +97,7 @@ This guide walks you through the complete estudjo workflow — from getting your
     **Pending** — generation is still in progress:
 
     ```json
-    { "success": true, "data": { "status": "pending", "task_id": "6bfd652d4c31261ffb8ed3424ac2775e" } }
+    { "success": true, "data": { "status": "pending" } }
     ```
 
     **Completed** — your assets are ready to download:
@@ -105,9 +107,8 @@ This guide walks you through the complete estudjo workflow — from getting your
       "success": true,
       "data": {
         "status": "completed",
-        "task_id": "6bfd652d4c31261ffb8ed3424ac2775e",
         "result_urls": [
-          "https://cdn.estudjo.com/outputs/6bfd652d4c31261ffb8ed3424ac2775e/result_0.jpg"
+          "https://files.estudjo.com/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
         ]
       }
     }
@@ -117,14 +118,17 @@ This guide walks you through the complete estudjo workflow — from getting your
 
     ```json
     {
-      "success": false,
+      "success": true,
       "data": {
         "status": "failed",
-        "task_id": "6bfd652d4c31261ffb8ed3424ac2775e",
-        "error": "Input image could not be processed"
+        "error_message": "Input image could not be processed"
       }
     }
     ```
+
+    <Note>
+      `success` stays `true` even for a failed generation — it only reports whether the status lookup itself worked. Check `data.status`.
+    </Note>
 
     <Tip>
       Poll every 5–10 seconds. Most generations complete in 10–100 seconds depending on the model and queue depth. The `result_urls` are permanent, public-read object storage URLs — use them directly in your app or download the files for long-term storage.

@@ -19,7 +19,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     ## Request body
 
     <ParamField body="model" type="string" required>
-      Model identifier (e.g. `estudjo/eco`).
+      Image model identifier (e.g. `estudjo/economic`). See [GET /models](/api/models/list).
     </ParamField>
 
     <ParamField body="aspect-ratio" type="string" required>
@@ -50,6 +50,10 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       Alternative field name for the scene UUID. Interchangeable with `scene`.
     </ParamField>
 
+    <ParamField body="characters" type="string[]">
+      Character UUIDs from [GET /characters](/api/characters/list) and/or direct image URLs. Only used when the chosen scene supports characters — the `characters` count in [GET /scenes](/api/scenes/list) tells you how many a scene expects (`0` means it doesn't use them).
+    </ParamField>
+
     <ParamField body="additional_data" type="object">
       Flat object of `string:string` pairs. Each entry is prepended to the prompt as a `"Title Case Key: Title Case Value"` line, in key order. Omit the field, pass `null`, or pass `{}` to add no extra data.
     </ParamField>
@@ -67,7 +71,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
-        "model": "estudjo/eco",
+        "model": "estudjo/economic",
         "category": "womens-clothing",
         "aspect-ratio": "1:1",
         "resolution": "1K",
@@ -82,7 +86,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{
-        "model": "estudjo/eco",
+        "model": "estudjo/economic",
         "aspect-ratio": "1:1",
         "resolution": "1K",
         "prompt": "Product on a marble table, soft morning light, minimalist studio",
@@ -132,7 +136,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="category" type="string">
-      Category slug. Falls back to the model's default category if omitted.
+      Category slug. Optional for video and never validated against the scene — but an unrecognized slug returns `400 invalid_input`.
     </ParamField>
 
     <ParamField body="callBackUrl" type="string">
@@ -146,7 +150,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     ## Example request
 
     ```bash
-    curl -X POST https://v1.api.estudjo.com/generate \
+    curl -X POST https://api.estudjo.com/generate \
       -H 'X-Api-Key: YOUR_API_KEY' \
       -H 'Content-Type: application/json' \
       -d '{

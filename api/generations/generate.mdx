@@ -1,10 +1,10 @@
 ---
-title: "Queue an Image or Video Generation"
+title: "Queue an Image, Video, or Text Generation"
 sidebarTitle: "Generate"
-description: "POST /generate — queue an AI image or video generation. Pass a model, product image URL, scene or prompt, and receive a task_id to poll for results."
+description: "POST /generate — queue an AI image, video, or product-description generation. Pass a model and product image URL, and receive a task_id to poll for results."
 ---
 
-POST `/generate` queues an AI generation job. The model you specify determines whether image or video logic runs. The endpoint is asynchronous — it returns a `task_id` immediately; use [GET /status](/api/generations/status) to track completion.
+POST `/generate` queues an AI generation job. The model you specify determines whether image, video, or text (product description) logic runs — check a model's `tool` in [GET /models](/api/models/list). The endpoint is asynchronous — it returns a `task_id` immediately; use [GET /status](/api/generations/status) to track completion, or pass a `callBackUrl` to be notified (see [Callbacks](/guides/callbacks)).
 
 **POST** `https://api.estudjo.com/generate`
 
@@ -44,6 +44,10 @@ POST `/generate` queues an AI generation job. The model you specify determines w
 
     <ParamField body="additional_data" type="object">
       Flat object of `string:string` pairs. Each entry is prepended to the prompt as a `"Title Case Key: Title Case Value"` line, in key order. Omit the field, pass `null`, or pass `{}` to add no extra data.
+    </ParamField>
+
+    <ParamField body="callBackUrl" type="string">
+      URL that receives a `POST` with the result once the generation completes or fails. Best-effort, not retried. See [Callbacks](/guides/callbacks).
     </ParamField>
 
     ## Example request
@@ -102,6 +106,10 @@ POST `/generate` queues an AI generation job. The model you specify determines w
       Category slug. Falls back to the model's default category if omitted.
     </ParamField>
 
+    <ParamField body="callBackUrl" type="string">
+      URL that receives a `POST` with the result once the generation completes or fails. Best-effort, not retried. See [Callbacks](/guides/callbacks).
+    </ParamField>
+
     <Info>
       If `prompt` is present, `scene` and `sceneId` are ignored entirely — the prompt takes full precedence.
     </Info>
@@ -121,6 +129,105 @@ POST `/generate` queues an AI generation job. The model you specify determines w
         "image_url": "https://static.example.com/thumb/product-86713.jpg"
       }'
     ```
+  </Tab>
+  <Tab title="Text">
+    Generates a product description (title, copy, attributes) from one or more product images.
+
+    ## Request body
+
+    <ParamField body="model" type="string" required>
+      One of exactly three text model identifiers: `estudjo/economic-product-description`, `estudjo/plus-product-description`, or `estudjo/advanced-product-description`. Tier names alone (e.g. `economic`) are not accepted.
+    </ParamField>
+
+    <ParamField body="category" type="string" required>
+      Category slug (e.g. `womens-clothing`). See [GET /categories](/api/categories/list).
+    </ParamField>
+
+    <ParamField body="image_urls" type="string[]" required>
+      One or more publicly accessible product image URLs, sent to the model as vision input. At least one is required.
+    </ParamField>
+
+    <ParamField body="target_language" type="string" required>
+      Language the content is generated in (e.g. `"Turkish"`, `"English"`).
+    </ParamField>
+
+    <ParamField body="brand_info" type="object">
+      Steers tone and content toward your brand voice.
+
+      <Expandable title="brand_info">
+        <ParamField body="name" type="string">
+          Brand name.
+        </ParamField>
+
+        <ParamField body="tone" type="string">
+          Desired writing tone (e.g. `"Descriptive not interpretive. Neutral and calm."`).
+        </ParamField>
+
+        <ParamField body="about" type="string">
+          Short description of the brand or store.
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField body="product" type="object">
+      Any JSON object with product-specific facts (title, color, material, ...), merged into the prompt as-is. Omit it or send `{}` if there's nothing to add.
+    </ParamField>
+
+    <ParamField body="callBackUrl" type="string">
+      URL that receives a `POST` with the result once the generation completes or fails. Best-effort, not retried. See [Callbacks](/guides/callbacks).
+    </ParamField>
+
+    ## Example request
+
+    ```bash
+    curl -X POST https://api.estudjo.com/generate \
+      -H 'X-Api-Key: YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "model": "estudjo/economic-product-description",
+        "category": "womens-clothing",
+        "image_urls": ["https://static.example.com/thumb/product-86713.jpg"],
+        "target_language": "Turkish",
+        "brand_info": {
+          "name": "Devr-i Tesettür",
+          "tone": "Descriptive not interpretive. Neutral and calm.",
+          "about": "A marketplace focused exclusively on modest women'\''s clothing."
+        },
+        "product": { "title": "White Long Dress", "color": "white", "material": "denim, cotton" }
+      }'
+    ```
+
+    ## Results
+
+    When the generation completes, [GET /status](/api/generations/status) returns the output as files in `result_urls`:
+
+    - **Two entries** (`.json` then `.md`) when the model's output was JSON-shaped — the common case. The `.json` is the raw structured output; the `.md` is a readable rendering of it (keys dropped, order preserved, embedded HTML converted to Markdown).
+    - **One entry** (`.md` only) otherwise.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "status": "completed",
+        "result_urls": [
+          "https://files.estudjo.com/generations/9a9b30f5e0db85b69497c9f9e8fbf5f2/1279641152bf9ad2b19b13cd4abc99dc.json",
+          "https://files.estudjo.com/generations/9a9b30f5e0db85b69497c9f9e8fbf5f2/f496301660d2ec000e00bf1249c5c810.md"
+        ]
+      }
+    }
+    ```
+
+    <Warning>
+      Text generations never return `502 provider_error` from `POST /generate`. The model call runs in the background after `queued` is returned (it can take close to a minute), so a provider failure only appears later as `"status": "failed"` with an `error_message` in `GET /status` — or in your callback.
+    </Warning>
+
+    ## Text-specific errors
+
+    | Code | HTTP | Cause |
+    | --- | --- | --- |
+    | `invalid_input` | 400 | Missing required field, unrecognized `category` slug, or no pricing configured for this model |
+    | `not_found` | 404 | `model` is not one of the three text model identifiers above |
+    | `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
   </Tab>
 </Tabs>
 
@@ -163,4 +270,4 @@ POST `/generate` queues an AI generation job. The model you specify determines w
 | `invalid_input` | 400 | Missing required field, invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, or `additional_data` values are not flat strings |
 | `not_found` | 404 | Unknown model, or the specified scene doesn't exist or doesn't belong to your account |
 | `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
-| `provider_error` | 502 | The upstream AI provider returned an error. For video generations, this can also indicate that the merged prompt (scene text \+ additional data) exceeded the provider's length limit |
+| `provider_error` | 502 | The upstream AI provider returned an error (image and video only). For video generations, this can also indicate that the merged prompt (scene text + additional data) exceeded the provider's length limit |

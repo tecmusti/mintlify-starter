@@ -1,0 +1,100 @@
+---
+title: "List Characters"
+sidebarTitle: "List Characters"
+description: "GET /characters — list the curated estudjo character catalog plus your own characters, with image variants. Filter by category and language."
+---
+
+GET `/characters` returns the curated estudjo character catalog together with the characters you created yourself. A character is a reusable model image (with name, ethnicity, and description) you can pass in the `characters` field of an image [POST /generate](/api/generations/generate) request, for scenes that use characters.
+
+**GET** `https://api.estudjo.com/characters`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+<ParamField header="X-USER-LANG" type="string">
+  2-letter ISO language code. Narrows **only the catalog** to characters for that language — your own characters are never filtered by it. Omit to skip language filtering.
+</ParamField>
+
+## Query parameters
+
+<ParamField query="category" type="string">
+  Category slug (e.g. `womens-clothing`). Narrows **both** the catalog and your own characters — your own character only appears if it is tagged with that category too. Omit to skip category filtering.
+</ParamField>
+
+## Example request
+
+```bash
+curl 'https://api.estudjo.com/characters?category=womens-clothing' \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'X-USER-LANG: en'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "36bb3683-c8d9-4ccd-a74f-dc693e65f0eb",
+      "image": "https://assets.estudjo.com/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg",
+      "variants": [
+        "https://assets.estudjo.com/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg",
+        "https://assets.estudjo.com/8dd2d329-15ca-4d8d-ae02-2b8b61f2b0be.jpg",
+        "https://assets.estudjo.com/3d616dd7-04f8-428f-8c6c-45b416a9668a.jpg",
+        "https://assets.estudjo.com/4dfc761a-9002-4345-8e9d-ce51e0207a11.jpg"
+      ],
+      "name": "...",
+      "ethnicity": "...",
+      "description": "...",
+      "type": "user"
+    },
+    {
+      "id": "a6f5d7af-08b7-49da-908f-b9ee3df1b0fb",
+      "image": "https://assets.estudjo.com/17947749-22e5-461e-b33e-3cbb766d2c76.jpg",
+      "variants": ["https://assets.estudjo.com/17947749-22e5-461e-b33e-3cbb766d2c76.jpg"],
+      "name": "...",
+      "ethnicity": "...",
+      "description": "...",
+      "type": "system"
+    }
+  ]
+}
+```
+
+<ResponseField name="data" type="array">
+  <Expandable title="Character object">
+    <ResponseField name="id" type="string">
+      Character UUID. Pass it in the `characters` array of `POST /generate`.
+    </ResponseField>
+
+    <ResponseField name="image" type="string">
+      URL of the character's primary image — always identical to `variants[0]`.
+    </ResponseField>
+
+    <ResponseField name="variants" type="string[]">
+      Every image belonging to the character, as directly usable URLs. One entry for a plain character; several for a character built from an image grid.
+    </ResponseField>
+
+    <ResponseField name="name" type="string">
+      Character name.
+    </ResponseField>
+
+    <ResponseField name="ethnicity" type="string">
+      Character ethnicity.
+    </ResponseField>
+
+    <ResponseField name="description" type="string">
+      Free-text description of the character.
+    </ResponseField>
+
+    <ResponseField name="type" type="string">
+      `system` for a curated catalog character, `user` for one you created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Info>
+  This endpoint is not paginated — every visible character is returned. Your own characters come first (newest first), followed by the catalog in its curated order.
+</Info>

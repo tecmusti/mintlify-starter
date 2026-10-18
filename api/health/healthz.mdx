@@ -1,0 +1,64 @@
+---
+title: "Check API Health"
+sidebarTitle: "Health Check"
+description: "GET /healthz — public liveness probe for the estudjo API. Returns db: ok when the backend and its database are reachable. No API key required."
+---
+
+GET `/healthz` is a public liveness probe. It confirms the API is up and its database is reachable. No credential is required, so it's safe to point an uptime monitor or load-balancer health check at it.
+
+**GET** `https://api.estudjo.com/healthz`
+
+This endpoint takes no headers and no parameters.
+
+## Example request
+
+```bash
+curl https://api.estudjo.com/healthz
+```
+
+## Response
+
+### 200 — Healthy
+
+```json
+{
+  "success": true,
+  "data": {
+    "db": "ok"
+  }
+}
+```
+
+<ResponseField name="success" type="boolean">
+  `true` when the API and its database are both reachable.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="db" type="string">
+      Always `"ok"` on a healthy response.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 500 — Backend unavailable
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "db_unavailable",
+    "message": "database is unreachable"
+  }
+}
+```
+
+<Tip>
+  Treat a `500 db_unavailable` as transient — retry with exponential back-off rather than alerting on a single failure.
+</Tip>
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `db_unavailable` | 500 | The backend is temporarily unable to reach its database |

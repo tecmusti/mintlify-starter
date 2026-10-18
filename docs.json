@@ -38,7 +38,8 @@
               "guides/generate-image",
               "guides/generate-video",
               "guides/poll-status",
-              "guides/manage-scenes"
+              "guides/manage-scenes",
+              "guides/callbacks"
             ]
           },
           {
@@ -53,6 +54,12 @@
       {
         "tab": "API Reference",
         "groups": [
+          {
+            "group": "Health",
+            "pages": [
+              "api/health/healthz"
+            ]
+          },
           {
             "group": "API Keys",
             "pages": [
@@ -83,6 +90,19 @@
               "api/scenes/create",
               "api/scenes/update",
               "api/scenes/delete"
+            ]
+          },
+          {
+            "group": "Catalog",
+            "pages": [
+              "api/models/list",
+              "api/categories/list"
+            ]
+          },
+          {
+            "group": "Characters",
+            "pages": [
+              "api/characters/list"
             ]
           }
         ]

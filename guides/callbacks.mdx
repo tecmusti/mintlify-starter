@@ -1,0 +1,97 @@
+---
+title: "Receive Generation Results with callBackUrl"
+sidebarTitle: "Callbacks"
+description: "Pass callBackUrl to POST /generate and estudjo will POST the final result to your server when an image, video, or text generation completes or fails."
+---
+
+Instead of polling [GET /status](/api/generations/status), you can pass a `callBackUrl` in any [POST /generate](/api/generations/generate) request — image, video, or text. When the generation closes out, estudjo sends one `POST` request with the result to that URL.
+
+## Add a callBackUrl
+
+The field name and behavior are identical for every tool:
+
+```bash
+curl -X POST https://api.estudjo.com/generate \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "estudjo/economic-product-description",
+    "category": "womens-clothing",
+    "image_urls": ["https://static.example.com/thumb/product-86713.jpg"],
+    "target_language": "English",
+    "callBackUrl": "https://your-app.example.com/webhooks/estudjo"
+  }'
+```
+
+The `POST /generate` response is unchanged — you still get `"status": "queued"` and a `task_id`. Store the `task_id` so you can match the incoming callback to your request.
+
+## Callback payloads
+
+Your endpoint receives a JSON body with `Content-Type: application/json`.
+
+<Tabs>
+  <Tab title="Success">
+    ```json
+    {
+      "success": true,
+      "task_id": "b301abc2cdea343d7c12af6c177b6501",
+      "result_urls": [
+        "https://files.estudjo.com/generations/b301abc2cdea343d7c12af6c177b6501/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
+      ]
+    }
+    ```
+
+    `result_urls` is the same list [GET /status](/api/generations/status) returns for a completed generation (for text, the `.json` + `.md` files).
+  </Tab>
+  <Tab title="Failure">
+    ```json
+    {
+      "success": false,
+      "task_id": "b301abc2cdea343d7c12af6c177b6501",
+      "error": {
+        "message": "generation failed"
+      }
+    }
+    ```
+
+    `error.message` is human-readable and may change — don't branch on its exact text. Reserved credits are refunded on failure, same as without a callback.
+  </Tab>
+</Tabs>
+
+<Note>
+  The callback body is **not** wrapped in the usual `{ "success": ..., "data": ... }` envelope — `task_id` and `result_urls` sit at the top level.
+</Note>
+
+## Delivery guarantees
+
+<Warning>
+  Delivery is **best-effort and not retried**. estudjo sends exactly one `POST` attempt. If your endpoint is down, slow, or returns a non-2xx status, the callback is lost.
+</Warning>
+
+Design your integration with that in mind:
+
+- **Respond fast** with any `2xx` status and do heavy processing asynchronously — the request times out after **10 seconds**.
+- **Keep polling as a fallback.** If you haven't received a callback within a reasonable window, call `GET /status?taskId=...` — it always reflects the final state.
+- **Be idempotent.** Key your handler on `task_id` so a result processed via both callback and polling is only applied once.
+
+## Example receiver
+
+```javascript server.js
+import express from 'express';
+
+const app = express();
+app.use(express.json());
+
+app.post('/webhooks/estudjo', (req, res) => {
+  res.sendStatus(200); // acknowledge immediately
+
+  const { success, task_id, result_urls, error } = req.body;
+  if (success) {
+    saveResults(task_id, result_urls);
+  } else {
+    markFailed(task_id, error?.message);
+  }
+});
+
+app.listen(3000);
+```

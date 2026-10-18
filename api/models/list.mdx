@@ -1,0 +1,123 @@
+---
+title: "List Available Models"
+sidebarTitle: "List Models"
+description: "GET /models — list every published estudjo image, video, and text model with its supported aspect ratios, resolutions, durations, categories, and pricing."
+---
+
+GET `/models` returns every published image, video, and text model, together with the options each one supports and what it costs. Use it to build model pickers and to validate `aspect-ratio`, `resolution`, and `duration` before calling [POST /generate](/api/generations/generate).
+
+**GET** `https://api.estudjo.com/models`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+<ParamField header="X-USER-LANG" type="string">
+  2-letter language code (e.g. `en`, `tr`) used to localize `name` and `description`. Falls back to English.
+</ParamField>
+
+This endpoint takes no query parameters — the full list is always returned.
+
+## Example request
+
+```bash
+curl https://api.estudjo.com/models \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'X-USER-LANG: en'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "endpoint": "estudjo/economic",
+      "name": "Economic",
+      "description": "<p>Built for fast 1K image generation...</p>",
+      "tool": "image",
+      "aspectRatios": ["1:1", "2:3", "3:4", "4:5", "5:4", "4:3", "3:2"],
+      "resolutions": ["1K"],
+      "durations": [],
+      "categories": ["womens-clothing", "jewelry-accessories"],
+      "pricing": [{ "resolution": "1K", "credits": "4" }]
+    },
+    {
+      "endpoint": "estudjo/economic-video",
+      "tool": "video",
+      "aspectRatios": ["1:1"],
+      "resolutions": ["480P", "720P"],
+      "durations": ["5", "8", "15"],
+      "categories": [],
+      "pricing": [{ "resolution": "480P", "duration": "5", "credits": "15" }]
+    },
+    {
+      "endpoint": "estudjo/economic-product-description",
+      "name": "Economic",
+      "tool": "text",
+      "aspectRatios": [],
+      "resolutions": [],
+      "durations": [],
+      "categories": [],
+      "pricing": [{ "credits": "20" }]
+    }
+  ]
+}
+```
+
+<ResponseField name="data" type="array">
+  <Expandable title="Model object">
+    <ResponseField name="endpoint" type="string">
+      Model identifier. Pass this exact value as `model` in `POST /generate`, and as the `model` filter / `models` entries in the Scenes API.
+    </ResponseField>
+
+    <ResponseField name="name" type="string">
+      Display name, localized by `X-USER-LANG` (English fallback). Omitted entirely when no translation exists in either language.
+    </ResponseField>
+
+    <ResponseField name="description" type="string">
+      HTML description, localized the same way as `name`. Omitted when unavailable.
+    </ResponseField>
+
+    <ResponseField name="tool" type="string">
+      `image`, `video`, or `text`. Decides which request shape `POST /generate` expects for this model.
+    </ResponseField>
+
+    <ResponseField name="aspectRatios" type="string[]">
+      Accepted `aspect-ratio` values.
+    </ResponseField>
+
+    <ResponseField name="resolutions" type="string[]">
+      Accepted `resolution` values.
+    </ResponseField>
+
+    <ResponseField name="durations" type="string[]">
+      Accepted `duration` values as plain numbers (`"5"`, not `"5s"`). Only non-empty for video models.
+    </ResponseField>
+
+    <ResponseField name="categories" type="string[]">
+      Category slugs linked to this model.
+    </ResponseField>
+
+    <ResponseField name="pricing" type="array">
+      Cost per generation. Shape depends on `tool`:
+
+      | `tool` | Entry shape |
+      | --- | --- |
+      | `image` | `{ resolution, credits }` |
+      | `video` | `{ resolution, duration, credits }` |
+      | `text` | `{ credits }` |
+
+      `credits` is a numeric string. `duration` uses the same plain value as `POST /generate`'s `duration` field.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Info>
+  `aspectRatios`, `resolutions`, `durations`, and `categories` are always arrays — `[]` when a model has none, never `null` or omitted.
+</Info>
+
+<Tip>
+  A `resolution` (and, for video, `duration`) combination that has no `pricing` entry is rejected by `POST /generate` with `400 invalid_input`. Check `pricing` before offering an option to your users.
+</Tip>

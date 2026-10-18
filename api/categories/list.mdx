@@ -1,0 +1,66 @@
+---
+title: "List Product Categories"
+sidebarTitle: "List Categories"
+description: "GET /categories — list published estudjo product categories with translated names and the suggested image, video, and text model for each."
+---
+
+GET `/categories` returns every published product category with its translated names and the model estudjo suggests for each tool. Use the `slug` as `category` in [POST /generate](/api/generations/generate) and as a filter in [GET /scenes](/api/scenes/list).
+
+**GET** `https://api.estudjo.com/categories`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+This endpoint takes no query parameters.
+
+## Example request
+
+```bash
+curl https://api.estudjo.com/categories \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "slug": "womens-clothing",
+      "name": { "en": "Women's Clothing", "tr": "Kadın Giyim", "es": "Ropa de Mujer" },
+      "suggested_image_model": "estudjo/plus",
+      "suggested_video_model": "estudjo/economic-video"
+    }
+  ]
+}
+```
+
+<ResponseField name="data" type="array">
+  <Expandable title="Category object">
+    <ResponseField name="slug" type="string">
+      Category identifier. Pass it as `category` in `POST /generate`, or as `categories` entries in `POST /scenes`.
+    </ResponseField>
+
+    <ResponseField name="name" type="object">
+      Map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). Always the full map — unlike `GET /models`, it is **not** narrowed by `X-USER-LANG`.
+    </ResponseField>
+
+    <ResponseField name="suggested_image_model" type="string">
+      Suggested image model identifier. Omitted when none is configured.
+    </ResponseField>
+
+    <ResponseField name="suggested_video_model" type="string">
+      Suggested video model identifier. Omitted when none is configured.
+    </ResponseField>
+
+    <ResponseField name="suggested_text_model" type="string">
+      Suggested text (product description) model identifier. Omitted when none is configured — most categories currently have none.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Info>
+  `suggested_*_model` fields are **omitted entirely** (not `null`) when a category has no suggestion for that tool. Values are the same model identifiers `POST /generate` accepts as `model`.
+</Info>

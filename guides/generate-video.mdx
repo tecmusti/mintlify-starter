@@ -23,7 +23,7 @@ Before sending a video request, note these differences from the image flow:
 | `aspect-ratio` | string | e.g. `1:1`, `16:9` |
 | `resolution` | string | e.g. `480P` |
 | `duration` | string | `"5"`, `"8"`, or `"15"` |
-| `image_url` | string | Publicly accessible product image |
+| `image_urls` | string[] | One or more publicly accessible product images |
 | `prompt` or `scene` | string | Either a direct prompt string **or** a scene UUID |
 
 <Warning>
@@ -45,7 +45,7 @@ curl -X POST https://api.estudjo.com/generate \
     "resolution": "480P",
     "duration": "5",
     "prompt": "confident fashion model showcasing the outfit, slow cinematic camera pan",
-    "image_url": "https://static.example.com/thumb/product-86713.jpg"
+    "image_urls": ["https://static.example.com/thumb/product-86713.jpg"]
   }'
 ```
 

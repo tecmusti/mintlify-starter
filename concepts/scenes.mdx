@@ -49,14 +49,14 @@ User-created scenes are linked to one or more category slugs and model identifie
 
 Predefined scenes also carry category associations — check the scene's metadata returned by `GET /scenes` to confirm compatible categories before generating.
 
-## Scenes and Video Generation
+## Using a Prompt Instead of a Scene
 
-For video generations, you can pass a `prompt` field directly in your `POST /generate` request instead of a scene reference. When a `prompt` is present, the `scene` field is **ignored entirely** — the prompt drives the generation on its own.
+For both image and video generations, you can pass a `prompt` field directly in your `POST /generate` request instead of a scene reference. When a `prompt` is present, no scene is looked up — the prompt drives the generation on its own. For image generations, `category` also becomes optional and the prompt is sent to the model exactly as given.
 
 ```json
 {
   "prompt": "A slow cinematic pan across a misty mountain range at dawn",
-  "model": "your-video-model-id"
+  "model": "estudjo/economic-video"
 }
 ```
 

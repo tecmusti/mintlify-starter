@@ -17,7 +17,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
-    Each entry in the response includes `name`, `scene_id`, and `type` (`predefined` or `user_created`).
+    Each entry in the response includes `name` (a language-code → translated-name map), `scene_id`, `type` (`predefined` or `user_created`), `preview_image`, `previews`, and `characters`. Add `?type=user_created` to list only your own scenes.
   </Step>
   <Step title="Inspect a scene">
     To view the full details of a scene you created — including its `description` and `prompt` — fetch it by ID. This endpoint is only available for `user_created` scenes.
@@ -31,10 +31,11 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     {
       "success": true,
       "data": {
-        "name": "Bright Minimalist Studio",
+        "name": { "en": "Bright Minimalist Studio", "tr": "Bright Minimalist Studio" },
         "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b",
         "description": "Clean studio look for apparel",
-        "prompt": "A bright minimalist studio with soft daylight"
+        "prompt": "A bright minimalist studio with soft daylight",
+        "characters": 0
       }
     }
     ```
@@ -63,7 +64,9 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       "data": {
         "name": "Bright Minimalist Studio",
         "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b",
-        "type": "user_created"
+        "type": "user_created",
+        "preview_image": null,
+        "characters": 0
       }
     }
     ```
@@ -84,7 +87,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
     See [Generate Image](/guides/generate-image) or [Generate Video](/guides/generate-video) for full request examples.
   </Step>
   <Step title="Update a scene">
-    You can update the `name`, `description`, and `prompt` of a scene at any time. The `models`, `categories`, and `scene_id` are immutable and cannot be changed after creation.
+    You can update the `name`, `description`, `prompt`, and `characters` of a scene at any time. Omitting `characters` resets it to `0`, so send the current value to keep it. The `models`, `categories`, and `scene_id` are immutable and cannot be changed after creation.
 
     ```bash
     curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \

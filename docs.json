@@ -75,6 +75,13 @@
             ]
           },
           {
+            "group": "Catalog",
+            "pages": [
+              "api/models/list",
+              "api/categories/list"
+            ]
+          },
+          {
             "group": "Generations",
             "pages": [
               "api/generations/generate",
@@ -90,13 +97,6 @@
               "api/scenes/create",
               "api/scenes/update",
               "api/scenes/delete"
-            ]
-          },
-          {
-            "group": "Catalog",
-            "pages": [
-              "api/models/list",
-              "api/categories/list"
             ]
           },
           {

@@ -34,8 +34,8 @@ To use a scene, pass its `scene_id` UUID as the `scene` field in your `POST /gen
 ```json
 {
   "scene": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "category": "portrait",
-  "model": "your-model-id"
+  "category": "womens-clothing",
+  "model": "estudjo/economic"
 }
 ```
 
@@ -47,7 +47,13 @@ To use a scene, pass its `scene_id` UUID as the `scene` field in your `POST /gen
 
 User-created scenes are linked to one or more category slugs and model identifiers at creation time. When you submit a generation, the `category` value in your `POST /generate` request body must match one of the categories associated with the scene. If the category doesn't match, the request will be rejected.
 
-Predefined scenes also carry category associations — check the scene's metadata returned by `GET /scenes` to confirm compatible categories before generating.
+Predefined scenes also carry category associations. To find scenes that work with a category, filter the list with `GET /scenes?category={slug}` — only compatible scenes are returned.
+
+## Scenes and Characters
+
+Some scenes place one or more people (characters) in the shot. The `characters` field in `GET /scenes` tells you how many character images a scene expects — `0` means the scene doesn't use characters. For a scene that does, pass that many entries in the `characters` array of an image `POST /generate` request, using character UUIDs from [GET /characters](/api/characters/list) or direct image URLs.
+
+When you create or update your own scene, set `characters` to the number of character images it should take.
 
 ## Using a Prompt Instead of a Scene
 

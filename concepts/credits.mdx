@@ -1,7 +1,7 @@
 ---
 title: "Credits and Billing: How the estudjo Prepaid Wallet Works"
 sidebarTitle: "Credits"
-description: "estudjo uses a prepaid credit system. Understand how credits are reserved, charged, and refunded across image and video generations."
+description: "estudjo uses a prepaid credit system. Understand how credits are reserved, charged, and refunded across image, video, and text generations."
 ---
 
 estudjo uses a **prepaid credit wallet**. You load credits in advance, and they are deducted automatically when you queue generations. There are no subscriptions or per-seat charges — you only spend credits when you generate.
@@ -46,6 +46,16 @@ Use the combination of log entries to determine the current state of a generatio
 - **`reserve` only** → The generation is still pending; credits are held but not yet settled.
 - **`reserve` \+ `spend`** → The generation completed successfully; the credit charge is kept.
 - **`reserve` \+ `release`** → The generation failed; your credits were fully refunded.
+
+## What a Generation Costs
+
+Every image, video, and text generation is priced per model. Check the `pricing` array of each model in [GET /models](/api/models/list) before queuing:
+
+- **Image** — priced by `resolution`
+- **Video** — priced by `resolution` + `duration`
+- **Text** — a flat price per generation
+
+The reserve / spend / release flow above applies to all three.
 
 ## Checking Your Balance
 

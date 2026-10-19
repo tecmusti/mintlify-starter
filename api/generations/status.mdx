@@ -47,7 +47,7 @@ The `status` field progresses through three possible states. The shape of `data`
     ```
   </Tab>
   <Tab title="Completed">
-    The generation finished successfully. `result_urls` contains the output file(s).
+    The generation finished successfully. `result_urls` contains the output file(s). For text (product description) generations it holds a `.json` + `.md` pair when the output was JSON-shaped, or a single `.md` otherwise.
 
     ```json
     {
@@ -97,7 +97,7 @@ The `status` field progresses through three possible states. The shape of `data`
 </ResponseField>
 
 <Tip>
-  Poll every 5–10 seconds. Most generations complete in 10–100 seconds. `result_urls` point to permanent public-read storage, so you can serve them directly to end users without re-hosting.
+  Poll every 5–10 seconds. Most image and video generations complete in 10–100 seconds; text generations can take up to about a minute. To skip polling, pass a `callBackUrl` to `POST /generate` (see [Callbacks](/guides/callbacks)). `result_urls` point to permanent public-read storage, so you can serve them directly to end users without re-hosting.
 </Tip>
 
 ---

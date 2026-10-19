@@ -1,34 +1,39 @@
 ---
-title: "estudjo – AI-Powered Image and Video Generation API"
-description: "estudjo turns product photos into professional AI-generated images and videos. Integrate in minutes with a simple, well-documented REST API."
+title: "estudjo – AI Product Image, Video, and Description API"
+description: "estudjo turns product photos into professional AI-generated images, videos, and product descriptions. Integrate in minutes with a simple, well-documented REST API."
 sidebarTitle: "Home"
 ---
 
-estudjo is an AI platform that transforms a single product photo into polished marketing images and videos. Use the REST API to integrate AI generation directly into your workflows, automation tools, or applications. Whether you're building an e-commerce pipeline or a creative automation tool, estudjo gives you studio-quality output from a single image URL.
+estudjo is an AI platform that turns your product photos into polished marketing images, short videos, and ready-to-publish product descriptions. Use the REST API to bring AI generation into your e-commerce pipeline, automation tools, or applications — send your product image URLs, and get studio-quality output back.
 
 <CardGroup cols={2}>
   <Card title="Introduction" icon="book-open" href="/introduction">
     Learn what estudjo can do
   </Card>
+
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Make your first API call in minutes
+    Make your first generation in minutes
   </Card>
+
   <Card title="API Reference" icon="code" href="/api/generations/generate">
     Browse all endpoints
   </Card>
-  <Card title="Scenes" icon="image" href="/concepts/scenes">
-    Understand prompt templates
+
+  <Card title="Models and Pricing" icon="cpu" href="/api/models/list">
+    See every model's options and credit cost
   </Card>
 </CardGroup>
 
+## How it works
+
 <Steps>
   <Step title="Get your API key">
-    Sign in to the estudjo dashboard at [estudjo.com](https://www.estudjo.com) and generate an API key from your account settings.
+    Sign in to the estudjo dashboard at [estudjo.com](https://www.estudjo.com) and generate an API key from your account settings. See [Authentication](/authentication).
   </Step>
   <Step title="Queue a generation">
-    Send a `POST /generate` request with your product image URL and a scene identifier. You'll receive a `task_id` in the response.
+    Send a `POST /generate` request with your product image URLs and a model — plus a scene or your own prompt for images and videos. You'll receive a `task_id` in the response.
   </Step>
-  <Step title="Poll for results">
-    Call `GET /status?taskId={task_id}` until the `status` field reads `completed`, then download your outputs from the `result_urls` array.
+  <Step title="Get your results">
+    Poll `GET /status?taskId={task_id}` until `status` is `completed`, or pass a `callBackUrl` to have estudjo POST the result to you. Your files are in the `result_urls` array.
   </Step>
 </Steps>

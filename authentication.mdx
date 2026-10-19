@@ -103,4 +103,5 @@ Only the revoked key is invalidated — all other keys on your account continue 
 
 | HTTP status | Error code | Meaning |
 | --- | --- | --- |
-| `401` | `unauthorized` | Missing or invalid `X-Api-Key` header |
+| `401` | `unauthorized` | No `X-Api-Key` header was sent |
+| `401` | `invalid_api_key` | The key is wrong or has been revoked |

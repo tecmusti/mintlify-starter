@@ -24,23 +24,39 @@ Every failed response follows this shape:
 
 | Code | HTTP Status | Description | Resolution |
 | --- | --- | --- | --- |
-| `invalid_input` | 400 | A required field is missing, a value is out of range, or a constraint is violated | Check the request body against the endpoint's parameter requirements |
-| `unauthorized` | 401 | Missing or invalid `X-Api-Key` header | Verify your API key and pass it as `X-Api-Key` |
+| `invalid_payload` | 400 | The request body is not valid JSON or doesn't match the expected shape (e.g. a string where an array is expected) | Check that you send `Content-Type: application/json` and a well-formed JSON body |
+| `invalid_input` | 400 | The JSON parsed, but a required field is missing, a value is out of range, or a constraint is violated | Check the request against the endpoint's parameter requirements |
+| `unauthorized` | 401 | No `X-Api-Key` header was sent | Add your key in the `X-Api-Key` header |
+| `invalid_api_key` | 401 | The `X-Api-Key` value is wrong or the key has been revoked | Verify the key, or create a new one — see [Authentication](/authentication) |
 | `insufficient_credits` | 402 | Your credit balance is too low to cover this generation | Top up your wallet via the estudjo dashboard |
 | `not_found` | 404 | The resource doesn't exist, belongs to another account, or has been archived | Confirm the ID is correct and the resource hasn't been deleted |
-| `rate_limited` | 429 | Too many requests in a short window | Back off and retry with exponential delay |
-| `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Retry after a short delay; use exponential back-off for repeated failures |
-| `provider_error` | 502 | The upstream AI provider failed | Retry the generation; if persistent, the prompt \+ scene may be too long |
+| `provider_error` | 502 | The upstream AI provider failed (image and video only) | Retry the generation; if persistent, the prompt + scene may be too long |
+| `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Retry after a short delay with exponential back-off |
+| `*_failed` | 500 | An unexpected server-side error (e.g. `create_failed`, `list_scenes_failed`, `status_failed`) | Retry after a short delay; contact support if it persists |
 
 ## Notes on Specific Codes
 
 <AccordionGroup>
+  <Accordion title="invalid_payload vs invalid_input (400)">
+    `invalid_payload` means the body couldn't be read at all — malformed JSON, or a field with the wrong JSON type. `invalid_input` means the body was read fine but its values failed validation. Both are client errors: fix the request rather than retrying it unchanged.
+  </Accordion>
+
+  <Accordion title="unauthorized vs invalid_api_key (401)">
+    `unauthorized` is returned when no credential is present. `invalid_api_key` is returned when a key is present but doesn't match an active key — including a key that has been revoked via `DELETE /api-keys/{key_id}`.
+  </Accordion>
+
   <Accordion title="not_found (404)">
     `not_found` deliberately makes no distinction between "wrong ID", "belongs to another account", and "archived". This is intentional — exposing that distinction would allow callers to enumerate resources they don't own.
   </Accordion>
 
   <Accordion title="provider_error (502)">
     For video generations, `provider_error` can also indicate that the merged system prompt combined with your scene and prompt text is too long for the upstream provider. If retries fail consistently, try shortening your scene context or prompt.
+
+    Text (product description) generations never return `provider_error` from `POST /generate` — the model runs after `queued` is returned, so a failure shows up later as `"status": "failed"` in `GET /status` or your callback.
+  </Accordion>
+
+  <Accordion title="Generation failures after queuing">
+    A generation that was accepted (`queued`) but later fails is **not** an API error — `GET /status` returns `success: true` with `"status": "failed"` and an `error_message`. Reserved credits are refunded automatically.
   </Accordion>
 </AccordionGroup>
 
@@ -63,10 +79,12 @@ if (!body.success) {
   const { code } = body.error;
   if (code === 'insufficient_credits') {
     // redirect user to top up
-  } else if (code === 'invalid_input') {
-    // surface validation error to caller
-  } else if (code === 'provider_error') {
-    // retry or alert
+  } else if (code === 'invalid_input' || code === 'invalid_payload') {
+    // surface validation error to caller — don't retry unchanged
+  } else if (code === 'unauthorized' || code === 'invalid_api_key') {
+    // check or rotate the API key
+  } else if (code === 'provider_error' || res.status >= 500) {
+    // retry with back-off
   } else {
     throw new Error(`Unexpected error: ${code}`);
   }

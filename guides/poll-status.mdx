@@ -1,18 +1,22 @@
 ---
 title: "Poll Generation Status and Retrieve Results"
 sidebarTitle: "Poll Status"
-description: "Use GET /status to track an estudjo generation from queued to completed and retrieve the finished image or video URL from result_urls."
+description: "Use GET /status to track an estudjo image, video, or text generation from queued to completed and retrieve the finished files from result_urls."
 ---
 
-Generations in estudjo are asynchronous. After queuing a job with `POST /generate` you receive a `task_id`. Use `GET /status` to check progress and retrieve the download URL once the generation is complete.
+Generations in estudjo are asynchronous. After queuing a job with [POST /generate](/api/generations/generate) you receive a `task_id`. Use `GET /status` to check progress and read the result URLs once the generation is complete.
 
 ```text
 GET https://api.estudjo.com/status?taskId={task_id}
 ```
 
 <Info>
-  Typical completion time is **10–100 seconds** depending on model and resolution. Poll every **5–10 seconds** — do not long-poll or send requests in rapid succession.
+  Typical completion time is **10–100 seconds** for images and videos, and up to about **a minute** for text. Poll every **5–10 seconds** — polling faster won't make a generation finish sooner.
 </Info>
+
+<Tip>
+  Don't want to poll? Pass a `callBackUrl` to `POST /generate` and estudjo will POST the result to your server when it's done. Keep polling as a fallback — callbacks are not retried. See [Callbacks](/guides/callbacks).
+</Tip>
 
 ## Status Values
 
@@ -20,10 +24,11 @@ A generation moves through up to three states:
 
 <AccordionGroup>
   <Accordion title="pending — still processing">
-    The job is in the queue or actively being generated.
+    The job is in the queue or actively being generated. Keep polling.
 
     ```json
     {
+      "success": true,
       "data": {
         "status": "pending"
       }
@@ -31,11 +36,12 @@ A generation moves through up to three states:
     ```
   </Accordion>
 
-  <Accordion title="completed — ready to download">
-    The generation finished successfully. Use the URLs in `result_urls` to access your files.
+  <Accordion title="completed — ready to use">
+    The generation finished successfully. `result_urls` holds your files.
 
     ```json
     {
+      "success": true,
       "data": {
         "status": "completed",
         "result_urls": [
@@ -47,10 +53,11 @@ A generation moves through up to three states:
   </Accordion>
 
   <Accordion title="failed — generation did not complete">
-    Something went wrong upstream. Check `error_message` for details and retry if appropriate.
+    The generation failed. `error_message` describes why. Reserved credits are refunded automatically, so you can retry without being charged twice.
 
     ```json
     {
+      "success": true,
       "data": {
         "status": "failed",
         "error_message": "..."
@@ -60,13 +67,25 @@ A generation moves through up to three states:
   </Accordion>
 </AccordionGroup>
 
+<Note>
+  `success` is `true` for all three states — it only says the status lookup itself worked. Always check `data.status`. `success` is `false` only when the lookup fails, for example `404 not_found` for an unknown `taskId`.
+</Note>
+
 ## About `result_urls`
 
 The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage (`files.estudjo.com`) — never the AI provider's temporary URLs. You can serve them directly to end users or download them into your own storage; no authentication is needed to fetch them.
 
-For text (product description) generations, `result_urls` holds files rather than media: a `.json` (raw structured output) followed by a `.md` rendering when the output was JSON-shaped, or a single `.md` otherwise.
+What you get depends on the tool:
+
+| Tool | `result_urls` contents |
+| --- | --- |
+| Image | One or more image files (e.g. `.jpeg`, `.png`) |
+| Video | The video file |
+| Text | A `.json` (raw structured output) followed by a `.md` rendering when the output was JSON-shaped, or a single `.md` otherwise |
 
 ## Polling Examples
+
+Both examples stop on `completed` or `failed`, surface API errors, and give up after 3 minutes.
 
 <CodeGroup>
 
@@ -76,40 +95,58 @@ import time, requests
 API_KEY = "YOUR_API_KEY"
 TASK_ID = "6bfd652d4c31261ffb8ed3424ac2775e"
 
-while True:
-    r = requests.get(
-        f"https://api.estudjo.com/status?taskId={TASK_ID}",
-        headers={"X-Api-Key": API_KEY}
-    )
-    data = r.json()["data"]
+deadline = time.time() + 180  # give up after 3 minutes
+while time.time() < deadline:
+    body = requests.get(
+        "https://api.estudjo.com/status",
+        params={"taskId": TASK_ID},
+        headers={"X-Api-Key": API_KEY},
+    ).json()
+
+    if not body["success"]:
+        raise RuntimeError(body["error"]["code"])
+
+    data = body["data"]
     if data["status"] == "completed":
         print("Done:", data["result_urls"])
         break
-    elif data["status"] == "failed":
+    if data["status"] == "failed":
         print("Failed:", data.get("error_message"))
         break
     time.sleep(5)
+else:
+    print("Timed out — check again later with the same task_id")
 ```
 
 ```javascript poll.js
-async function pollStatus(taskId, apiKey) {
-  while (true) {
+async function pollStatus(taskId, apiKey, timeoutMs = 180_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
     const res = await fetch(
-      `https://api.estudjo.com/status?taskId=${taskId}`,
+      `https://api.estudjo.com/status?taskId=${encodeURIComponent(taskId)}`,
       { headers: { 'X-Api-Key': apiKey } }
     );
-    const { data } = await res.json();
+    const body = await res.json();
+    if (!body.success) throw new Error(body.error.code);
+
+    const { data } = body;
     if (data.status === 'completed') return data.result_urls;
     if (data.status === 'failed') throw new Error(data.error_message);
     await new Promise(r => setTimeout(r, 5000));
   }
+  throw new Error('Timed out — check again later with the same task_id');
 }
 ```
 
 </CodeGroup>
+
+<Tip>
+  A timeout on your side doesn't cancel the generation. The `task_id` stays valid — check it again later, or find it in [GET /generations](/api/generations/history).
+</Tip>
 
 ## Error Reference
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
 | `not_found` | 404 | The `taskId` does not exist or belongs to a different account |
+| `unauthorized` / `invalid_api_key` | 401 | Missing, wrong, or revoked `X-Api-Key` |

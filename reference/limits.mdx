@@ -38,5 +38,5 @@ An out-of-range page returns an **empty `generations` / `scenes` array** (not an
 Generations are asynchronous and typically take **10–100 seconds** to complete. Poll `GET /status` every **5–10 seconds** to check for completion.
 
 <Warning>
-  Do not long-poll. Space your status requests at least 5 seconds apart to avoid triggering rate limits.
+  Do not long-poll. Space your status requests at least 5 seconds apart — faster polling won't make generations finish sooner.
 </Warning>

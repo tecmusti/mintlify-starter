@@ -44,11 +44,10 @@ estudjo uses standard HTTP status codes alongside the JSON envelope. Use the `su
 | Status | Meaning |
 | --- | --- |
 | 200 | Success |
-| 400 | Bad request — invalid input |
-| 401 | Unauthorized — invalid or missing API key |
+| 400 | Bad request — malformed body or invalid input |
+| 401 | Unauthorized — missing, invalid, or revoked API key |
 | 402 | Payment required — insufficient credits |
 | 404 | Not found |
-| 429 | Rate limited |
 | 500 | Internal server error |
 | 502 | Upstream provider error |
 

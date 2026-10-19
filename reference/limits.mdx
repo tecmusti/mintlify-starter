@@ -12,10 +12,11 @@ The estudjo API enforces a small set of hard limits. Keep these in mind when des
 |---|---|---|
 | Generation history page size | 1–250 (default 250) | `GET /generations ?limit=` |
 | Scenes list page size | 1–250 (default 250) | `GET /scenes ?limit=` |
-| Scene name minimum length | 5 characters | `POST /scenes`, `PUT /scenes/{id}` |
+| Scene name length | 5–255 characters | `POST /scenes`, `PUT /scenes/{id}` |
+| Scene description maximum length | 255 characters | `POST /scenes`, `PUT /scenes/{id}` |
 | Typical generation completion | 10–100 seconds | Poll `GET /status` |
 | API key visibility | Shown once at creation | `POST /api-keys` response |
-| Video duration values | `5`, `8`, or `15` (no unit suffix) | `POST /generate` (video) |
+| Video duration values | Per model — see `durations` in `GET /models` (plain numbers, no unit suffix) | `POST /generate` (video) |
 
 ## Pagination
 
@@ -26,7 +27,7 @@ An out-of-range page returns an **empty `results` array** (not an error), with `
 <Tip>
   Use the `total` and `per_page` values from list responses to calculate the number of pages:
 
-  ```
+  ```text
   pages = ceil(total / per_page)
   ```
 </Tip>

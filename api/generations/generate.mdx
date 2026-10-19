@@ -35,7 +35,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="prompt" type="string">
-      Full prompt override. When set, `category` and `scene`/`sceneId` are not required, and your prompt is sent to the model **exactly as given**.
+      Full prompt override. When set, `category` and `scene` are not required, and your prompt is sent to the model **exactly as given**.
     </ParamField>
 
     <ParamField body="category" type="string">
@@ -43,11 +43,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="scene" type="string">
-      Scene UUID. Required unless `prompt` is set — provide either `scene` or `sceneId`.
-    </ParamField>
-
-    <ParamField body="sceneId" type="string">
-      Alternative field name for the scene UUID. Interchangeable with `scene`.
+      Scene UUID (`scene_id` from [GET /scenes](/api/scenes/list)). Required unless `prompt` is set.
     </ParamField>
 
     <ParamField body="characters" type="string[]">
@@ -116,7 +112,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="duration" type="string" required>
-      Clip duration in seconds. Accepted values: `5`, `8`, or `15`.
+      Clip duration in seconds, as a plain number string with no unit suffix (e.g. `"5"`). Must be one of the chosen model's `durations` from [GET /models](/api/models/list) — supported values differ per model.
     </ParamField>
 
     <ParamField body="image_urls" type="string[]" required>
@@ -124,15 +120,11 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="prompt" type="string">
-      Direct text prompt describing the desired video output. When `prompt` is present, `scene` and `sceneId` are never consulted. Required if neither `scene` nor `sceneId` is provided.
+      Direct text prompt describing the desired video output. When `prompt` is present, `scene` is never consulted. Required if `scene` is not provided.
     </ParamField>
 
     <ParamField body="scene" type="string">
-      Scene UUID. Used only when `prompt` is absent. Provide either `scene` or `sceneId` — one is required if `prompt` is not supplied.
-    </ParamField>
-
-    <ParamField body="sceneId" type="string">
-      Alternative field name for the scene UUID. Interchangeable with `scene` when `prompt` is absent.
+      Scene UUID (`scene_id` from [GET /scenes](/api/scenes/list)). Used only when `prompt` is absent — required if `prompt` is not supplied.
     </ParamField>
 
     <ParamField body="category" type="string">
@@ -144,7 +136,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <Info>
-      If `prompt` is present, `scene` and `sceneId` are ignored entirely — the prompt takes full precedence.
+      If `prompt` is present, `scene` is ignored entirely — the prompt takes full precedence.
     </Info>
 
     ## Example request
@@ -300,7 +292,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | Missing required field, empty `image_urls`, neither `prompt` nor `scene`/`sceneId` given (or, for image, `category` missing without `prompt`), invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, no pricing for the chosen options, or `additional_data` values are not flat strings |
+| `invalid_input` | 400 | Missing required field, empty `image_urls`, neither `prompt` nor `scene` given (or, for image, `category` missing without `prompt`), invalid `aspect-ratio`/`resolution`/`duration`, category not linked to scene, no pricing for the chosen options, or `additional_data` values are not flat strings |
 | `not_found` | 404 | Unknown model, or the specified scene doesn't exist or doesn't belong to your account |
 | `insufficient_credits` | 402 | Your credit balance is too low to queue this job |
 | `provider_error` | 502 | The upstream AI provider returned an error (image and video only). For video generations, this can also indicate that the merged prompt (scene text + additional data) exceeded the provider's length limit |

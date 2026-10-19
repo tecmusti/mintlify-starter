@@ -1,10 +1,10 @@
 ---
 title: "Update a Scene via PUT /scenes/{scene_id}"
 sidebarTitle: "Update Scene"
-description: "PUT /scenes/{scene_id} — update the name, description, or prompt of a user-created estudjo scene. Models and categories cannot be changed after creation."
+description: "PUT /scenes/{scene_id} — update the name, description, prompt, or character count of a user-created estudjo scene. Models and categories cannot be changed after creation."
 ---
 
-Update the `name`, `description`, or `prompt` of a scene you own. The scene must be `user_created` and not archived. Models and categories are fixed at creation and cannot be modified — submit a new scene via [POST /scenes](/api/scenes/create) if you need different associations.
+Update the `name`, `description`, `prompt`, or `characters` of a scene you own. The scene must be `user_created` and not archived. Models and categories are fixed at creation and cannot be modified — submit a new scene via [POST /scenes](/api/scenes/create) if you need different associations.
 
 ## Endpoint
 
@@ -25,7 +25,7 @@ PUT https://api.estudjo.com/scenes/{scene_id}
 ## Request Body
 
 <ParamField body="name" type="string" required>
-  Updated display name for the scene. Minimum 5 characters.
+  Updated display name for the scene. 5–255 characters.
 </ParamField>
 
 <ParamField body="prompt" type="string" required>
@@ -33,7 +33,11 @@ PUT https://api.estudjo.com/scenes/{scene_id}
 </ParamField>
 
 <ParamField body="description" type="string">
-  Updated short description. Optional.
+  Updated short description. Optional, maximum 255 characters.
+</ParamField>
+
+<ParamField body="characters" default="0" type="integer">
+  How many character images the scene expects in [POST /generate](/api/generations/generate). Optional, defaults to `0` when omitted — so send the current value if you want to keep it. Must not be negative.
 </ParamField>
 
 <Info>
@@ -46,7 +50,7 @@ PUT https://api.estudjo.com/scenes/{scene_id}
 curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b \
   -H 'X-Api-Key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
-  -d '{"name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text."}'
+  -d '{"name": "Bright Minimalist Studio v2", "prompt": "Updated prompt text.", "characters": 1}'
 ```
 
 ## Response
@@ -54,7 +58,7 @@ curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b 
 ### 200 — Success
 
 ```json
-{ "success": true, "data": { "name": "Bright Minimalist Studio v2", "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b", "type": "user_created" } }
+{ "success": true, "data": { "name": "Bright Minimalist Studio v2", "scene_id": "7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b", "type": "user_created", "preview_image": null, "characters": 1 } }
 ```
 
 <ResponseField name="name" type="string">
@@ -69,9 +73,17 @@ curl -X PUT https://api.estudjo.com/scenes/7c1e2f4a-9b3d-4e5f-8a6b-1c2d3e4f5a6b 
   Always `user_created` for scenes you own.
 </ResponseField>
 
+<ResponseField name="preview_image" type="string | null">
+  URL of the scene's preview image, or `null` if it has none.
+</ResponseField>
+
+<ResponseField name="characters" type="integer">
+  The character count now stored for the scene.
+</ResponseField>
+
 ## Errors
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | `name` is fewer than 5 characters, `prompt` is empty, or other validation failed (same rules as [POST /scenes](/api/scenes/create)). |
+| `invalid_input` | 400 | `name` is fewer than 5 or more than 255 characters, `description` is longer than 255 characters, `prompt` is empty, `characters` is negative, or other validation failed (same rules as [POST /scenes](/api/scenes/create)). |
 | `not_found` | 404 | The scene doesn't exist, belongs to another account, is predefined, is archived, or `scene_id` is not a valid UUID. All cases are intentionally indistinguishable. |

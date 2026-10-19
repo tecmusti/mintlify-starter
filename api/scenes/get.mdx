@@ -37,16 +37,17 @@ curl https://api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
 {
   "success": true,
   "data": {
-    "name": "Bright Minimalist Studio",
+    "name": { "en": "Bright Minimalist Studio", "tr": "Bright Minimalist Studio", "es": "Bright Minimalist Studio" },
     "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
     "description": "optional short description",
-    "prompt": "A bright minimalist studio with soft daylight"
+    "prompt": "A bright minimalist studio with soft daylight",
+    "characters": 0
   }
 }
 ```
 
-<ResponseField name="name" type="string">
-  Display name of the scene.
+<ResponseField name="name" type="object">
+  Map of language code → translated name, same shape as [GET /scenes](/api/scenes/list). Omitted for a scene with no translations.
 </ResponseField>
 
 <ResponseField name="scene_id" type="string">
@@ -60,6 +61,14 @@ curl https://api.estudjo.com/scenes/59b4a671-1b90-453e-92c3-a28ceee177af \
 <ResponseField name="prompt" type="string">
   The full prompt text used to define the scene.
 </ResponseField>
+
+<ResponseField name="characters" type="integer">
+  How many character images the scene expects in [POST /generate](/api/generations/generate). `0` means it doesn't use characters.
+</ResponseField>
+
+<Note>
+  `POST /scenes` and `PUT /scenes/{scene_id}` return `name` as a plain string, not this language map.
+</Note>
 
 <Info>
   `description` is always returned as a string. When no description has been set, the value is `""` — not `null`.

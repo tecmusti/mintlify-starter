@@ -23,7 +23,7 @@ Before you call `/generate`, make sure you have:
 | `resolution` | string | e.g. `1K` |
 | `image_urls` | string[] (URLs) | One or more publicly accessible product images |
 | `category` | string | Category slug (e.g. `womens-clothing`) — not required when `prompt` is set |
-| `scene` or `sceneId` | string (UUID) | The scene to use — not required when `prompt` is set |
+| `scene` | string (UUID) | The scene to use — not required when `prompt` is set |
 
 <Tip>
   Send more than one URL in `image_urls` to give the model several reference images in a single generation (support varies by model).
@@ -31,7 +31,7 @@ Before you call `/generate`, make sure you have:
 
 ## Using Your Own Prompt
 
-Pass **`prompt`** to skip scenes entirely. When `prompt` is set, `category` and `scene`/`sceneId` are not required, and your text is sent to the model **exactly as given** — no scene template is applied.
+Pass **`prompt`** to skip scenes entirely. When `prompt` is set, `category` and `scene` are not required, and your text is sent to the model **exactly as given** — no scene template is applied.
 
 ```json
 {
@@ -100,7 +100,7 @@ A successful request returns a `queued` status and a `task_id` you use to track 
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | Missing required field, empty `image_urls`, neither `prompt` nor `scene`/`sceneId` given, `category` missing without `prompt`, bad `aspect-ratio` or `resolution` value, `category` not linked to the scene, or `additional_data` contains non-flat or non-string values |
+| `invalid_input` | 400 | Missing required field, empty `image_urls`, neither `prompt` nor `scene` given, `category` missing without `prompt`, bad `aspect-ratio` or `resolution` value, `category` not linked to the scene, or `additional_data` contains non-flat or non-string values |
 | `not_found` | 404 | Unknown model or scene |
 | `insufficient_credits` | 402 | Account balance too low to queue the generation |
 | `provider_error` | 502 | Upstream AI provider failed — retry after a short delay |

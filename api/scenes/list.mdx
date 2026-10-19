@@ -4,7 +4,7 @@ sidebarTitle: "List Scenes"
 description: "GET /scenes — list predefined and user-created scenes. Filter by category, model, or type. Returns scene_id, name, and type for each result."
 ---
 
-GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, and `type` are returned here — use [GET /scenes/\{scene\_id\}](/api/scenes/get) for full details of your own scenes.
+GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, `type`, `preview_image`, `previews`, and `characters` are returned here — use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
 
 ## Endpoint
 
@@ -54,8 +54,29 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
   "success": true,
   "data": {
     "scenes": [
-      { "name": "Lit-Modern Room", "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32", "type": "predefined" },
-      { "name": "Grand Historic Interior", "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af", "type": "user_created" }
+      {
+        "name": { "en": "Lit-Modern Room", "tr": "Aydınlık Modern Oda", "es": "Habitación Moderna" },
+        "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32",
+        "type": "predefined",
+        "preview_image": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
+        "previews": [
+          {
+            "thumbnail": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
+            "url": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
+            "category": "womens-clothing",
+            "model": "estudjo/economic"
+          }
+        ],
+        "characters": 1
+      },
+      {
+        "name": { "en": "Grand Historic Interior" },
+        "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
+        "type": "user_created",
+        "preview_image": null,
+        "previews": [],
+        "characters": 0
+      }
     ],
     "page": 1,
     "per_page": 250,
@@ -68,8 +89,8 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
   Array of scene objects matching your query.
 
   <Expandable title="Scene object">
-    <ResponseField name="name" type="string">
-      Display name of the scene.
+    <ResponseField name="name" type="object">
+      Map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). Omitted entirely for a scene with no translations (rare).
     </ResponseField>
 
     <ResponseField name="scene_id" type="string">
@@ -78,6 +99,36 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 
     <ResponseField name="type" type="string">
       Either `predefined` (estudjo-provided) or `user_created` (owned by your account).
+    </ResponseField>
+
+    <ResponseField name="preview_image" type="string | null">
+      URL of the scene's main preview image, or `null` if it has none.
+    </ResponseField>
+
+    <ResponseField name="previews" type="array">
+      Example outputs for the scene, in display order. `[]` when there are none. Narrowed by the `category` query parameter (but not by `model`).
+
+      <Expandable title="Preview object">
+        <ResponseField name="thumbnail" type="string">
+          Thumbnail URL.
+        </ResponseField>
+
+        <ResponseField name="url" type="string">
+          Full-size file URL. May point to a video in the future, not only images.
+        </ResponseField>
+
+        <ResponseField name="category" type="string">
+          Category slug the preview was made for.
+        </ResponseField>
+
+        <ResponseField name="model" type="string">
+          Model identifier the preview was made with.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="characters" type="integer">
+      How many character images the scene expects in the `characters` field of [POST /generate](/api/generations/generate). `0` means the scene doesn't use characters.
     </ResponseField>
   </Expandable>
 </ResponseField>

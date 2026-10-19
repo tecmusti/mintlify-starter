@@ -39,7 +39,7 @@ A generation moves through up to three states:
       "data": {
         "status": "completed",
         "result_urls": [
-          "https://storage.estudjo.com/generations/6bfd652d4c31261ffb8ed3424ac2775e/result.jpeg"
+          "https://files.estudjo.com/generations/6bfd652d4c31261ffb8ed3424ac2775e/88a2d6cd3219e08ee64ec9f60e5735ec.jpeg"
         ]
       }
     }
@@ -62,7 +62,9 @@ A generation moves through up to three states:
 
 ## About `result_urls`
 
-The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage. Do not use them directly in your application (e.g. in an `<img>` or `<video>` tag), download the files and store them in your own infrastructure. Generated files are available for download for 72 hours.
+The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage (`files.estudjo.com`) — never the AI provider's temporary URLs. You can serve them directly to end users or download them into your own storage; no authentication is needed to fetch them.
+
+For text (product description) generations, `result_urls` holds files rather than media: a `.json` (raw structured output) followed by a `.md` rendering when the output was JSON-shaped, or a single `.md` otherwise.
 
 ## Polling Examples
 

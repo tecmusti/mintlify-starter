@@ -38,8 +38,9 @@ curl -X POST https://api.estudjo.com/api-keys \
 {
   "success": true,
   "data": {
+    "key_id": "d065a511-50b8-4050-9fab-c8cbdc087600",
     "name": "My integration",
-    "key": "xxxxxxxxxxxxxxxxxxxx",
+    "api_key": "xxxxxxxxxxxxxxxxxxxx",
     "message": "save this key now — it will not be shown again"
   }
 }
@@ -51,7 +52,7 @@ curl -X POST https://api.estudjo.com/api-keys \
 
 ## List your keys
 
-Retrieve all API keys associated with your account. The `key` field is masked in list responses for security:
+Retrieve all API keys associated with your account. Only metadata is returned — never the full key. Use the `key_id` here to revoke a key:
 
 ```bash
 curl https://api.estudjo.com/api-keys \
@@ -63,7 +64,10 @@ curl https://api.estudjo.com/api-keys \
   "success": true,
   "data": [
     {
+      "key_id": "d065a511-50b8-4050-9fab-c8cbdc087600",
       "name": "My integration",
+      "last_used_at": null,
+      "revoked_at": null,
       "date_created": "2026-07-05T12:31:07.941725+03:00"
     }
   ]
@@ -72,11 +76,11 @@ curl https://api.estudjo.com/api-keys \
 
 ## Rotate a compromised key
 
-If a key is leaked or compromised, revoke it immediately with `DELETE /api-keys/{id}` and create a replacement:
+If a key is leaked or compromised, revoke it immediately with `DELETE /api-keys/{key_id}` and create a replacement:
 
 ```bash
 # Revoke the compromised key
-curl -X DELETE https://api.estudjo.com/api-keys/KEY_ID \
+curl -X DELETE https://api.estudjo.com/api-keys/d065a511-50b8-4050-9fab-c8cbdc087600 \
   -H 'X-Api-Key: YOUR_OTHER_KEY'
 
 # Create a new key

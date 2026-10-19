@@ -35,7 +35,7 @@ curl -X POST https://api.estudjo.com/api-keys \
 {
   "success": true,
   "data": {
-    "id": 4,
+    "key_id": "d065a511-50b8-4050-9fab-c8cbdc087600",
     "name": "Zapier integration",
     "api_key": "9e6e81a6d...",
     "message": "save this key now — it will not be shown again"
@@ -53,8 +53,8 @@ curl -X POST https://api.estudjo.com/api-keys \
 
 <ResponseField name="data" type="object">
   <Expandable title="data">
-    <ResponseField name="id" type="number">
-      Unique numeric identifier for the API key. Use this value when revoking the key via `DELETE /api-keys/{id}`.
+    <ResponseField name="key_id" type="string">
+      UUID identifying the key. Pass it to [DELETE /api-keys/\{key_id\}](/api/api-keys/revoke) to revoke the key. Safe to store — it can't be used to authenticate.
     </ResponseField>
 
     <ResponseField name="name" type="string">

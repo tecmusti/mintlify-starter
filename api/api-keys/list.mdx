@@ -4,7 +4,7 @@ sidebarTitle: "List Keys"
 description: "List all API keys on your estudjo account. Returns metadata only — the full key value is never exposed after creation. Requires X-Api-Key."
 ---
 
-Retrieve a list of all API keys associated with your estudjo account. This endpoint returns metadata only — the full key value is never exposed after the initial creation response. Use this endpoint to audit active keys, check when a key was last used, or find the `id` needed to revoke a key.
+Retrieve a list of all API keys associated with your estudjo account. This endpoint returns metadata only — the full key value is never exposed after the initial creation response. Use this endpoint to audit active keys, check when a key was last used, or find the `key_id` needed to revoke a key.
 
 ## Request
 
@@ -30,6 +30,7 @@ curl https://api.estudjo.com/api-keys \
   "success": true,
   "data": [
     {
+      "key_id": "d065a511-50b8-4050-9fab-c8cbdc087600",
       "name": "Zapier integration",
       "last_used_at": null,
       "revoked_at": null,
@@ -49,8 +50,8 @@ curl https://api.estudjo.com/api-keys \
 
 <ResponseField name="data" type="array">
   <Expandable title="data[]">
-    <ResponseField name="id" type="number">
-      Unique numeric identifier for the API key. Pass this value to `DELETE /api-keys/{id}` to revoke the key.
+    <ResponseField name="key_id" type="string">
+      UUID identifying the API key. Pass this value to [DELETE /api-keys/\{key_id\}](/api/api-keys/revoke) to revoke the key.
     </ResponseField>
 
     <ResponseField name="name" type="string">

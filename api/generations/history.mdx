@@ -47,6 +47,11 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
       {
         "task_id": "bcfeabcb2195e728c29369dc29c9cc32",
         "status": "completed",
+        "tool": { "name": "Image Generation", "slug": "image" },
+        "model": {
+          "endpoint": "estudjo/economic",
+          "name": { "en": "Economic", "tr": "Ekonomik" }
+        },
         "result_urls": [
           "https://files.estudjo.com/generations/bcfeabcb2195e728c29369dc29c9cc32/5587d45a00b7b4dd2fb441c1edee7ac3.png"
         ],
@@ -90,6 +95,34 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
 
         <ResponseField name="status" type="string">
           Current state: `pending`, `completed`, or `failed`.
+        </ResponseField>
+
+        <ResponseField name="tool" type="object">
+          The tool the generation ran on, as recorded when it was queued.
+
+          <Expandable title="tool">
+            <ResponseField name="name" type="string">
+              Display name (e.g. `"Image Generation"`).
+            </ResponseField>
+
+            <ResponseField name="slug" type="string">
+              `image`, `video`, or `text` — the same values as `tool` in [GET /models](/api/models/list).
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+
+        <ResponseField name="model" type="object">
+          The model the generation used, as recorded when it was queued.
+
+          <Expandable title="model">
+            <ResponseField name="endpoint" type="string">
+              Model identifier — the same value you passed as `model` to `POST /generate`.
+            </ResponseField>
+
+            <ResponseField name="name" type="object">
+              Map of language code → translated model name. Omitted when the model has no translations.
+            </ResponseField>
+          </Expandable>
         </ResponseField>
 
         <ResponseField name="result_urls" type="string[]">

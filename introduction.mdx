@@ -1,36 +1,40 @@
 ---
 title: "Introduction to estudjo: Concepts and API Overview"
 sidebarTitle: "Introduction"
-description: "estudjo is a REST API for generating AI product images and videos from a single photo. Learn about models, scenes, and the async generation workflow."
+description: "estudjo is a REST API for generating AI product images, videos, and product descriptions from your product photos. Learn about models, scenes, and the async generation workflow."
 ---
 
-estudjo is a REST API that turns a single product photo into studio-quality marketing images, short cinematic videos, and ready-to-publish product descriptions. Instead of expensive photo shoots or manual post-production, you send an image URL and a scene template, and estudjo's AI models handle the rest — returning permanent, ready-to-use output URLs you can plug straight into your storefront, ads, or CMS.
+estudjo is a REST API that turns your product photos into studio-quality marketing images, short cinematic videos, and ready-to-publish product descriptions. Instead of expensive photo shoots or manual copywriting, you send your product image URLs along with a scene or your own prompt, and estudjo's AI models handle the rest — returning permanent, ready-to-use output URLs you can plug straight into your storefront, ads, or CMS.
 
 ## What you can build
 
 <CardGroup cols={2}>
-  <Card title="Image Generation" icon="image">
-    Generate studio-quality product images with predefined or custom scene templates
+  <Card title="Image Generation" icon="image" href="/guides/generate-image">
+    Studio-quality product images from predefined scenes, your own scenes, or a custom prompt
   </Card>
 
-  <Card title="Video Generation" icon="video">
-    Create short cinematic product videos from a single photo
+  <Card title="Video Generation" icon="video" href="/guides/generate-video">
+    Short cinematic product videos from a single photo
   </Card>
 
-  <Card title="Product Descriptions" icon="file-text">
-    Generate product copy in any language from your product images
+  <Card title="Product Descriptions" icon="file-text" href="/api/generations/generate">
+    Product copy in any language, written from your product images and brand voice
   </Card>
 
-  <Card title="Scene Management" icon="layers">
-    Build reusable prompt templates scoped to specific models and categories
+  <Card title="Models and Pricing" icon="cpu" href="/api/models/list">
+    Every model's supported options and credit cost, plus suggested models per category
   </Card>
 
-  <Card title="Characters" icon="user">
-    Reuse curated or your own model characters across generations
+  <Card title="Scenes" icon="layers" href="/concepts/scenes">
+    Reusable prompt templates scoped to specific models and categories
   </Card>
 
-  <Card title="Credit Wallet" icon="wallet">
-    Track and manage generation spend via the wallet API
+  <Card title="Characters" icon="user" href="/api/characters/list">
+    Curated and your own model characters for scenes that feature people
+  </Card>
+
+  <Card title="Credit Wallet" icon="wallet" href="/concepts/credits">
+    Prepaid credits that are reserved on queue and refunded on failure
   </Card>
 
   <Card title="Callbacks" icon="webhook" href="/guides/callbacks">
@@ -42,21 +46,21 @@ estudjo is a REST API that turns a single product photo into studio-quality mark
 
 <Steps>
   <Step title="Submit a generation request">
-    Send a `POST /generate` request with your product image URLs, the model you want to use, and either a scene that defines the visual style or your own prompt.
+    Send a `POST /generate` request with your product image URLs and the model you want to use. For images and videos, add a scene that defines the visual style — or your own `prompt`. The model decides whether an image, video, or text generation runs.
   </Step>
   <Step title="Receive a task ID">
     The API responds immediately with a `task_id`. Generation happens asynchronously, so your request never blocks.
   </Step>
-  <Step title="Poll for status">
-    Call `GET /status?taskId={task_id}` periodically until the `status` field returns `completed` — or pass a `callBackUrl` and let estudjo notify you.
+  <Step title="Track progress">
+    Call `GET /status?taskId={task_id}` every few seconds until `status` is `completed` or `failed` — or pass a `callBackUrl` and let estudjo POST the result to you.
   </Step>
-  <Step title="Download your results">
-    Retrieve your generated assets from the `result_urls` array — these are permanent, public-read object storage URLs ready to use anywhere.
+  <Step title="Use your results">
+    Read the `result_urls` array: images and videos for visual generations, a `.json` + `.md` pair for product descriptions. These are permanent, public-read URLs ready to use anywhere.
   </Step>
 </Steps>
 
 <Note>
-  All endpoints require an `X-Api-Key` header except `GET /healthz`.
+  All endpoints require an `X-Api-Key` header except `GET /healthz`. See [Authentication](/authentication) to get a key.
 </Note>
 
 ## Base URLs
@@ -70,19 +74,19 @@ estudjo is a REST API that turns a single product photo into studio-quality mark
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/healthz` | Health check (no API key required) |
-| `GET` | `/wallet/balance` | Retrieve your current credit balance |
-| `POST` | `/api-keys` | Create a new API key |
-| `GET` | `/api-keys` | List all API keys on your account |
-| `DELETE` | `/api-keys/{key_id}` | Revoke an API key by `key_id` |
-| `GET` | `/models` | List models, their options, and pricing |
-| `GET` | `/categories` | List product categories and suggested models |
-| `POST` | `/generate` | Queue an image, video, or text generation |
-| `GET` | `/status` | Poll generation status by `taskId` |
-| `GET` | `/generations` | List past generations |
-| `GET` | `/scenes` | List available scenes |
-| `GET` | `/scenes/{scene_id}` | Retrieve a single scene |
-| `POST` | `/scenes` | Create a custom scene |
-| `PUT` | `/scenes/{scene_id}` | Update an existing scene |
-| `DELETE` | `/scenes/{scene_id}` | Archive a scene |
-| `GET` | `/characters` | List curated and your own characters |
+| `GET` | [`/healthz`](/api/health/healthz) | Health check (no API key required) |
+| `POST` | [`/api-keys`](/api/api-keys/create) | Create a new API key |
+| `GET` | [`/api-keys`](/api/api-keys/list) | List all API keys on your account |
+| `DELETE` | [`/api-keys/{key_id}`](/api/api-keys/revoke) | Revoke an API key |
+| `GET` | [`/wallet/balance`](/api/wallet/balance) | Retrieve your current credit balance |
+| `GET` | [`/models`](/api/models/list) | List models, their options, and pricing |
+| `GET` | [`/categories`](/api/categories/list) | List product categories and suggested models |
+| `POST` | [`/generate`](/api/generations/generate) | Queue an image, video, or text generation |
+| `GET` | [`/status`](/api/generations/status) | Poll a generation's status by `taskId` |
+| `GET` | [`/generations`](/api/generations/history) | List past generations with their credit ledger |
+| `GET` | [`/scenes`](/api/scenes/list) | List predefined and your own scenes |
+| `GET` | [`/scenes/{scene_id}`](/api/scenes/get) | Retrieve one of your scenes |
+| `POST` | [`/scenes`](/api/scenes/create) | Create a custom scene |
+| `PUT` | [`/scenes/{scene_id}`](/api/scenes/update) | Update one of your scenes |
+| `DELETE` | [`/scenes/{scene_id}`](/api/scenes/delete) | Archive one of your scenes |
+| `GET` | [`/characters`](/api/characters/list) | List curated and your own characters |

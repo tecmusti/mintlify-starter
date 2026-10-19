@@ -114,7 +114,13 @@
       "type": "button",
       "label": "Dashboard",
       "href": "https://www.estudjo.com"
-    }
+    },
+    "links": [
+      {
+        "href": "mailto:support@estudjo.com",
+        "label": "Support"
+      }
+    ]
   },
   "logo": {
     "light": "/images/estudjo-logo.svg",
@@ -135,5 +141,28 @@
     "color": {
       "dark": "#0a0a0a"
     }
+  },
+  "footer": {
+    "socials": {
+      "youtube": "https://www.youtube.com/@estudjo",
+      "instagram": "https://www.instagram.com/estudjoapp",
+      "x": "https://x.com/estudjoapp",
+      "linkedin": "https://www.linkedin.com/company/estudjo"
+    },
+    "links": [
+      {
+        "header": "Support",
+        "items": [
+          {
+            "label": "support@estudjo.com",
+            "href": "mailto:support@estudjo.com"
+          },
+          {
+            "label": "Dashboard",
+            "href": "https://www.estudjo.com"
+          }
+        ]
+      }
+    ]
   }
 }

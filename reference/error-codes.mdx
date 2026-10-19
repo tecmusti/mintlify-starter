@@ -32,7 +32,7 @@ Every failed response follows this shape:
 | `not_found` | 404 | The resource doesn't exist, belongs to another account, or has been archived | Confirm the ID is correct and the resource hasn't been deleted |
 | `provider_error` | 502 | The upstream AI provider failed (image and video only) | Retry the generation; if persistent, the prompt + scene may be too long |
 | `db_unavailable` | 500 | The estudjo backend is temporarily unavailable | Retry after a short delay with exponential back-off |
-| `*_failed` | 500 | An unexpected server-side error (e.g. `create_failed`, `list_scenes_failed`, `status_failed`) | Retry after a short delay; contact support if it persists |
+| `*_failed` | 500 | An unexpected server-side error (e.g. `create_failed`, `list_scenes_failed`, `status_failed`) | Retry after a short delay; [contact support](mailto:support@estudjo.com) if it persists |
 
 ## Notes on Specific Codes
 
@@ -90,3 +90,20 @@ if (!body.success) {
   }
 }
 ```
+
+## Still Stuck?
+
+<Card title="Contact integration support" icon="mail" href="mailto:support@estudjo.com">
+  Email [**support@estudjo.com**](mailto:support@estudjo.com) and include the details below so we can look into it right away.
+</Card>
+
+Include in your email:
+
+- The **`task_id`**, if the problem is with a specific generation
+- The **`error.code`** and HTTP status you received
+- The **endpoint** you called and the **request body** — with your API key removed
+- **When** it happened (timestamp and timezone)
+
+<Warning>
+  Never send your full API key by email. If you think a key has been exposed, revoke it with [DELETE /api-keys/\{key_id\}](/api/api-keys/revoke) and create a new one.
+</Warning>

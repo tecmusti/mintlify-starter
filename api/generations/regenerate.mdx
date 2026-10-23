@@ -1,0 +1,99 @@
+---
+title: "Regenerate an Image with a New Prompt"
+sidebarTitle: "Regenerate"
+description: "POST /regenerate — create a new version of an image you already generated, using it as the reference with a new prompt. Image only, source must be 14 days old or less."
+---
+
+POST `/regenerate` creates a new image from one you already generated: the earlier output file becomes the reference image, and your new `prompt` describes the change (e.g. a different background). It's asynchronous and returns a `task_id`, exactly like [POST /generate](/api/generations/generate).
+
+**POST** `https://api.estudjo.com/regenerate`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+<Info>
+  Only **image** generations can be regenerated for now, and the source generation must be **14 days old or less**.
+</Info>
+
+## Request body
+
+All five fields are required.
+
+<ParamField body="fileId" type="string" required>
+  The output file to use as the reference image. It's the file name (without extension) in a `result_urls` entry — for `.../generations/{task_id}/68ea1895c53b018bb0d51b3fbe811c83.jpg` the `fileId` is `68ea1895c53b018bb0d51b3fbe811c83`. See [GET /generations/files/\{fileId\}](/api/generations/file).
+</ParamField>
+
+<ParamField body="model" type="string" required>
+  Image model identifier (e.g. `estudjo/economic`). It can differ from the model the source was made with. See [GET /models](/api/models/list).
+</ParamField>
+
+<ParamField body="aspect-ratio" type="string" required>
+  Output aspect ratio — one of the model's `aspectRatios`.
+</ParamField>
+
+<ParamField body="resolution" type="string" required>
+  Output resolution — one of the model's `resolutions`.
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  What to change. Sent to the model **exactly as given** — no scene or category is used, same as the `prompt` override in `POST /generate`.
+</ParamField>
+
+<Note>
+  `callBackUrl`, `characters`, and `additional_data` are not accepted here. Track the result with [GET /status](/api/generations/status).
+</Note>
+
+## Example request
+
+```bash
+curl -X POST https://api.estudjo.com/regenerate \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fileId": "68ea1895c53b018bb0d51b3fbe811c83",
+    "model": "estudjo/economic",
+    "aspect-ratio": "1:1",
+    "resolution": "1K",
+    "prompt": "change background color to white"
+  }'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "queued",
+    "task_id": "852a77eff757dc69ed0cf43c02d91897"
+  }
+}
+```
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="status" type="string">
+      Always `"queued"` on success.
+    </ResponseField>
+    <ResponseField name="task_id" type="string">
+      The new generation's own ID. Poll it with [GET /status](/api/generations/status).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+The new generation shares the source's `job_id`, so [GET /generations/jobs](/api/generations/jobs) shows it grouped with the original.
+
+## Credits
+
+A regeneration is a normal, fully priced image generation — the same reserve / spend / release rules as `POST /generate` apply. Check the model's `pricing` in [GET /models](/api/models/list).
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_payload` | 400 | The body isn't valid JSON |
+| `invalid_input` | 400 | A required field is missing, the source isn't an image generation, the source is older than 14 days, or the aspect ratio / resolution isn't valid for the model |
+| `not_found` | 404 | `fileId` doesn't exist or belongs to another account, or `model` is unknown |
+| `insufficient_credits` | 402 | Your credit balance is too low |
+| `provider_error` | 502 | The upstream AI provider failed |

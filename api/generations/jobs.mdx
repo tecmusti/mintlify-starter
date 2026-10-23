@@ -1,0 +1,136 @@
+---
+title: "List Generation Jobs"
+sidebarTitle: "Jobs"
+description: "GET /generations/jobs — your estudjo generation history grouped by job: an original generation together with every regeneration made from it."
+---
+
+GET `/generations/jobs` lists your generation history grouped by **job**. A job is an original generation plus every regeneration made from it with [POST /regenerate](/api/generations/regenerate). Use it to show one card per product image with all its versions, instead of one row per attempt like [GET /generations](/api/generations/history).
+
+**GET** `https://api.estudjo.com/generations/jobs`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+## Query parameters
+
+Same as [GET /generations](/api/generations/history), but pagination counts jobs, not individual attempts.
+
+<ParamField query="page" type="integer">
+  Page number. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  Jobs per page, `1`–`250`. Defaults to `250`.
+</ParamField>
+
+<ParamField query="status" type="string">
+  `pending`, `completed`, or `failed`.
+</ParamField>
+
+<ParamField query="tool" type="string">
+  `image`, `video`, or `text`.
+</ParamField>
+
+<ParamField query="model" type="string">
+  Model identifier (e.g. `estudjo/economic`). URL-encode the slash as `%2F`.
+</ParamField>
+
+## Example request
+
+```bash
+curl 'https://api.estudjo.com/generations/jobs?tool=image&limit=20' \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+A job with an original generation and one failed regeneration:
+
+```json
+{
+  "success": true,
+  "data": {
+    "generations": [
+      {
+        "job_id": "f21e3a91-0f8b-a06a-be37-c800951740ae",
+        "status": "completed",
+        "date_created": "2026-10-18T11:42:50.177679+03:00",
+        "tool": { "name": "Image Generation", "slug": "image" },
+        "tasks": [
+          { "task_id": "fe3f0ff9d97dbbc214fd16213318eed4", "status": "completed", "date_created": "2026-10-18T11:42:50.177679+03:00" },
+          { "task_id": "852a77eff757dc69ed0cf43c02d91897", "status": "failed", "date_created": "2026-10-20T11:37:19.124924+03:00" }
+        ],
+        "result_urls": [
+          "https://files.estudjo.com/generations/fe3f0ff9d97dbbc214fd16213318eed4/68ea1895c53b018bb0d51b3fbe811c83.jpg"
+        ],
+        "credits_logs": [
+          { "type": "reserve", "amount": "-4", "balance_after": "11779.5", "date_created": "2026-10-18T11:42:50.177679+03:00" },
+          { "type": "spend", "amount": "0", "balance_after": "11779.5", "date_created": "2026-10-18T11:42:57.765644+03:00" },
+          { "type": "reserve", "amount": "-9", "balance_after": "11710.5", "date_created": "2026-10-20T11:37:19.124924+03:00" },
+          { "type": "release", "amount": "9", "balance_after": "11710.5", "date_created": "2026-10-20T11:38:31.87148+03:00" }
+        ]
+      }
+    ],
+    "page": 1,
+    "per_page": 250,
+    "total": 661
+  }
+}
+```
+
+<ResponseField name="generations" type="array">
+  Job objects for the requested page.
+
+  <Expandable title="Job object">
+    <ResponseField name="job_id" type="string">
+      The job's identifier — the same `job_id` each attempt carries in [GET /generations](/api/generations/history).
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      The job's overall status, computed from its tasks: `failed` only if **every** task failed, `pending` if **any** task is still running, otherwise `completed`. A job with one success and one failed retry reads as `completed`.
+    </ResponseField>
+
+    <ResponseField name="date_created" type="string">
+      When the **original** generation was created — not the latest attempt.
+    </ResponseField>
+
+    <ResponseField name="tool" type="object">
+      `{ name, slug }` — shared by every task in the job.
+    </ResponseField>
+
+    <ResponseField name="tasks" type="array">
+      Every attempt under this job, oldest first. Each has `task_id`, `status`, and `date_created`. Use a `task_id` with [GET /status](/api/generations/status) for that attempt's own result.
+    </ResponseField>
+
+    <ResponseField name="result_urls" type="string[]">
+      Output files from every **completed** task in the job. Always an array — `[]` when there's nothing to show. Failed tasks contribute nothing, and files from tasks older than the **14-day** retention window are left out individually.
+    </ResponseField>
+
+    <ResponseField name="credits_logs" type="array">
+      Every task's ledger entries combined, oldest task first. Same entry shape as [GET /generations](/api/generations/history).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="per_page" type="integer">
+  The `limit` actually applied.
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of jobs matching the query.
+</ResponseField>
+
+<Info>
+  There's no `model` field on a job — a regeneration can use a different model than the original. To see each attempt's model, use [GET /generations](/api/generations/history).
+</Info>
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `status` / `tool` has an unsupported value |

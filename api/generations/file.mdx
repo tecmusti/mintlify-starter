@@ -1,0 +1,86 @@
+---
+title: "Get a Generated File"
+sidebarTitle: "Get File"
+description: "GET /generations/files/{fileId} — retrieve one estudjo output file's URL, model, tool, and the request it was generated with."
+---
+
+GET `/generations/files/{fileId}` returns the details of a single output file: its URL, which generation produced it, and the request behind it. Use it when you already have a file (for example from a `result_urls` entry) and want its details without listing whole generations — or to get the `fileId` you need for [POST /regenerate](/api/generations/regenerate).
+
+**GET** `https://api.estudjo.com/generations/files/{fileId}`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+## Path parameters
+
+<ParamField path="fileId" type="string" required>
+  The file's ID — its file name without extension in a `result_urls` entry. For `.../generations/fe3f0ff9d97dbbc214fd16213318eed4/68ea1895c53b018bb0d51b3fbe811c83.jpg` it's `68ea1895c53b018bb0d51b3fbe811c83`.
+</ParamField>
+
+## Example request
+
+```bash
+curl https://api.estudjo.com/generations/files/68ea1895c53b018bb0d51b3fbe811c83 \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "fileId": "68ea1895c53b018bb0d51b3fbe811c83",
+    "taskId": "fe3f0ff9d97dbbc214fd16213318eed4",
+    "url": "https://files.estudjo.com/generations/fe3f0ff9d97dbbc214fd16213318eed4/68ea1895c53b018bb0d51b3fbe811c83.jpg",
+    "model": "estudjo/economic",
+    "tool": "image",
+    "request": {
+      "aspect-ratio": "2:3",
+      "resolution": "1K",
+      "duration": null,
+      "image_urls": ["https://static.example.com/thumb/product-86713.jpg"],
+      "prompt": "Product on a marble table, soft morning light"
+    }
+  }
+}
+```
+
+<ResponseField name="fileId" type="string">
+  The file's ID.
+</ResponseField>
+
+<ResponseField name="taskId" type="string">
+  The generation that produced this file — the `task_id` from `POST /generate`.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  The file's public URL.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  Model identifier the file was generated with (e.g. `estudjo/economic`).
+</ResponseField>
+
+<ResponseField name="tool" type="string">
+  `image`, `video`, or `text`.
+</ResponseField>
+
+<ResponseField name="request" type="object">
+  The main request options — `aspect-ratio`, `resolution`, `duration` (`null` for images), `image_urls`, and `prompt` (`""` if a scene was used). Present only for `image` and `video` files.
+</ResponseField>
+
+<Note>
+  This response uses camelCase `fileId` / `taskId`, unlike the snake_case `task_id` elsewhere in the API.
+</Note>
+
+<Warning>
+  This endpoint returns the `url` even for files older than the **14-day** retention window, but the file itself may no longer be available there.
+</Warning>
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `not_found` | 404 | The `fileId` doesn't exist or belongs to another account — intentionally indistinguishable |

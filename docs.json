@@ -85,8 +85,11 @@
             "group": "Generations",
             "pages": [
               "api/generations/generate",
+              "api/generations/regenerate",
               "api/generations/status",
-              "api/generations/history"
+              "api/generations/history",
+              "api/generations/jobs",
+              "api/generations/file"
             ]
           },
           {

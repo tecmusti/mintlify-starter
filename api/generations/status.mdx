@@ -87,7 +87,7 @@ The `status` field progresses through three possible states. The shape of `data`
     </ResponseField>
 
     <ResponseField name="result_urls" type="string[]">
-      Array of output file URLs. Present only when `status` is `"completed"`. These are permanent, public-read storage URLs — not temporary provider URLs.
+      Array of output file URLs. Present only when `status` is `"completed"`. These are public-read URLs on estudjo's own storage — not temporary provider URLs. Files are kept for **14 days**.
     </ResponseField>
 
     <ResponseField name="error_message" type="string">
@@ -97,8 +97,12 @@ The `status` field progresses through three possible states. The shape of `data`
 </ResponseField>
 
 <Tip>
-  Poll every 5–10 seconds. Most image and video generations complete in 10–100 seconds; text generations can take up to about a minute. To skip polling, pass a `callBackUrl` to `POST /generate` (see [Callbacks](/guides/callbacks)). `result_urls` point to permanent public-read storage, so you can serve them directly to end users without re-hosting.
+  Poll every 5–10 seconds. Most image and video generations complete in 10–100 seconds; text generations can take up to about a minute. To skip polling, pass a `callBackUrl` to `POST /generate` (see [Callbacks](/guides/callbacks)).
 </Tip>
+
+<Warning>
+  Output files are kept for **14 days**. Download anything you need to keep into your own storage.
+</Warning>
 
 ---
 
@@ -106,4 +110,5 @@ The `status` field progresses through three possible states. The shape of `data`
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
+| `invalid_input` | 400 | The `taskId` query parameter is missing |
 | `not_found` | 404 | The `taskId` is unknown or belongs to a different account |

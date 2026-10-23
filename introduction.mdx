@@ -4,7 +4,7 @@ sidebarTitle: "Introduction"
 description: "estudjo is a REST API for generating AI product images, videos, and product descriptions from your product photos. Learn about models, scenes, and the async generation workflow."
 ---
 
-estudjo is a REST API that turns your product photos into studio-quality marketing images, short cinematic videos, and ready-to-publish product descriptions. Instead of expensive photo shoots or manual copywriting, you send your product image URLs along with a scene or your own prompt, and estudjo's AI models handle the rest — returning permanent, ready-to-use output URLs you can plug straight into your storefront, ads, or CMS.
+estudjo is a REST API that turns your product photos into studio-quality marketing images, short cinematic videos, and ready-to-publish product descriptions. Instead of expensive photo shoots or manual copywriting, you send your product image URLs along with a scene or your own prompt, and estudjo's AI models handle the rest — returning ready-to-use output URLs you can download into your storefront, ads, or CMS.
 
 ## What you can build
 
@@ -55,7 +55,7 @@ estudjo is a REST API that turns your product photos into studio-quality marketi
     Call `GET /status?taskId={task_id}` every few seconds until `status` is `completed` or `failed` — or pass a `callBackUrl` and let estudjo POST the result to you.
   </Step>
   <Step title="Use your results">
-    Read the `result_urls` array: images and videos for visual generations, a `.json` + `.md` pair for product descriptions. These are permanent, public-read URLs ready to use anywhere.
+    Read the `result_urls` array: images and videos for visual generations, a `.json` + `.md` pair for product descriptions. These are public-read URLs, kept for **14 days** — download anything you need to keep.
   </Step>
 </Steps>
 
@@ -87,7 +87,10 @@ estudjo is a REST API that turns your product photos into studio-quality marketi
 | `GET` | [`/categories`](/api/categories/list) | List product categories and suggested models |
 | `POST` | [`/generate`](/api/generations/generate) | Queue an image, video, or text generation |
 | `GET` | [`/status`](/api/generations/status) | Poll a generation's status by `taskId` |
+| `POST` | [`/regenerate`](/api/generations/regenerate) | Regenerate an image with a new prompt |
 | `GET` | [`/generations`](/api/generations/history) | List past generations with their credit ledger |
+| `GET` | [`/generations/jobs`](/api/generations/jobs) | List generations grouped with their regenerations |
+| `GET` | [`/generations/files/{fileId}`](/api/generations/file) | Get one output file's details |
 | `GET` | [`/scenes`](/api/scenes/list) | List predefined and your own scenes |
 | `GET` | [`/scenes/{scene_id}`](/api/scenes/get) | Retrieve one of your scenes |
 | `POST` | [`/scenes`](/api/scenes/create) | Create a custom scene |

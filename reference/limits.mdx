@@ -17,6 +17,8 @@ The estudjo API enforces a small set of hard limits. Keep these in mind when des
 | Typical generation completion | 10–100 seconds (image/video); up to ~1 minute (text) | Poll `GET /status` or use `callBackUrl` |
 | Callback delivery | One attempt, 10-second timeout, not retried | `callBackUrl` in `POST /generate` |
 | API key visibility | Shown once at creation | `POST /api-keys` response |
+| Output file retention | 14 days | `result_urls` — download files you need to keep |
+| Regenerate source age | 14 days or less | `POST /regenerate` |
 | Video duration values | Per model — see `durations` in `GET /models` (plain numbers, no unit suffix) | `POST /generate` (video) |
 
 ## Pagination

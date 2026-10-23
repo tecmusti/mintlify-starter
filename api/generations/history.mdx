@@ -1,10 +1,10 @@
 ---
 title: "List and Filter Generation History"
 sidebarTitle: "History"
-description: "GET /generations — retrieve your estudjo generation history with status, result URLs, and credit ledger entries. Supports pagination and filtering."
+description: "GET /generations — retrieve your estudjo generation history with status, request details, result URLs, and credit ledger entries. Filter by status, tool, or model."
 ---
 
-GET `/generations` returns a paginated list of all generation jobs on your account, including their current status, output URLs, and credit ledger entries. Use it to build dashboards, audit credit usage, or let users browse past results.
+GET `/generations` returns a paginated list of every generation on your account — one item per individual attempt — with its status, the request it was made with, output URLs, and credit ledger entries. Use it to build dashboards, audit credit usage, or let users browse past results. To see an original generation grouped with its regenerations, use [GET /generations/jobs](/api/generations/jobs).
 
 **GET** `https://api.estudjo.com/generations`
 
@@ -25,13 +25,21 @@ GET `/generations` returns a paginated list of all generation jobs on your accou
 </ParamField>
 
 <ParamField query="status" type="string">
-  Filter results to a single status. Accepted values: `pending`, `completed`, or `failed`. Omit to return all statuses.
+  Filter to a single status: `pending`, `completed`, or `failed`. Omit to return all statuses.
+</ParamField>
+
+<ParamField query="tool" type="string">
+  Filter to a single tool: `image`, `video`, or `text`. Omit to return all tools.
+</ParamField>
+
+<ParamField query="model" type="string">
+  Filter to a single model, using the same identifier as `model` in `POST /generate` (e.g. `estudjo/economic`). URL-encode the slash as `%2F`. An unknown model simply returns no results.
 </ParamField>
 
 ## Example request
 
 ```bash
-curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
+curl 'https://api.estudjo.com/generations?status=completed&tool=image&limit=20&page=1' \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -46,11 +54,19 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
     "generations": [
       {
         "task_id": "bcfeabcb2195e728c29369dc29c9cc32",
+        "job_id": "f21e3a91-0f8b-a06a-be37-c800951740ae",
         "status": "completed",
         "tool": { "name": "Image Generation", "slug": "image" },
         "model": {
           "endpoint": "estudjo/economic",
           "name": { "en": "Economic", "tr": "Ekonomik" }
+        },
+        "request": {
+          "aspect-ratio": "2:3",
+          "resolution": "1K",
+          "duration": null,
+          "image_urls": ["https://static.example.com/thumb/product-86713.jpg"],
+          "prompt": "Product on a marble table, soft morning light"
         },
         "result_urls": [
           "https://files.estudjo.com/generations/bcfeabcb2195e728c29369dc29c9cc32/5587d45a00b7b4dd2fb441c1edee7ac3.png"
@@ -86,11 +102,15 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
 <ResponseField name="data" type="object">
   <Expandable title="data">
     <ResponseField name="generations" type="array">
-      Ordered list of generation objects for the requested page.
+      Generation objects for the requested page, newest first.
 
       <Expandable title="Generation object">
         <ResponseField name="task_id" type="string">
-          Unique identifier for the generation job.
+          Unique identifier for this generation attempt — the same value `POST /generate` returned.
+        </ResponseField>
+
+        <ResponseField name="job_id" type="string">
+          Groups an original generation with every regeneration made from it via [POST /regenerate](/api/generations/regenerate). An original and its regenerations share one `job_id`.
         </ResponseField>
 
         <ResponseField name="status" type="string">
@@ -125,8 +145,34 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
           </Expandable>
         </ResponseField>
 
-        <ResponseField name="result_urls" type="string[]">
-          Array of output file URLs. Present only when `status` is `"completed"`.
+        <ResponseField name="request" type="object">
+          The main options the generation was requested with. Present only for `image` and `video` generations — never for `text`.
+
+          <Expandable title="request">
+            <ResponseField name="aspect-ratio" type="string">
+              Requested aspect ratio.
+            </ResponseField>
+
+            <ResponseField name="resolution" type="string">
+              Requested resolution.
+            </ResponseField>
+
+            <ResponseField name="duration" type="string | null">
+              Requested video duration. Always `null` for images.
+            </ResponseField>
+
+            <ResponseField name="image_urls" type="string[]">
+              The source image URLs you sent.
+            </ResponseField>
+
+            <ResponseField name="prompt" type="string">
+              The `prompt` you sent, or `""` if the generation used a scene instead.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+
+        <ResponseField name="result_urls" type="string[] | null">
+          Output file URLs. Present only when `status` is `"completed"`. Becomes `null` once the generation is older than the **14-day** file-retention window — the files are no longer available.
         </ResponseField>
 
         <ResponseField name="error_message" type="string">
@@ -138,7 +184,7 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
 
           <Expandable title="Credits log entry">
             <ResponseField name="type" type="string">
-              Ledger entry type. See the credit log types table below for a full explanation.
+              Ledger entry type. See the credit log types table below.
             </ResponseField>
 
             <ResponseField name="amount" type="string">
@@ -156,7 +202,7 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
         </ResponseField>
 
         <ResponseField name="date_created" type="string">
-          ISO 8601 timestamp of when the generation job was created.
+          ISO 8601 timestamp of when the generation was created.
         </ResponseField>
       </Expandable>
     </ResponseField>
@@ -166,14 +212,18 @@ curl 'https://api.estudjo.com/generations?status=completed&limit=20&page=1' \
     </ResponseField>
 
     <ResponseField name="per_page" type="integer">
-      The number of results per page actually used. This reflects the `limit` value that was applied — use `ceil(total / per_page)` to calculate the total number of pages.
+      The number of results per page actually used — the `limit` that was applied. Use `ceil(total / per_page)` to calculate the number of pages.
     </ResponseField>
 
     <ResponseField name="total" type="integer">
-      Total number of generations matching the query (across all pages).
+      Total number of generations matching the query across all pages.
     </ResponseField>
   </Expandable>
 </ResponseField>
+
+<Warning>
+  Output files are kept for **14 days**. Download anything you need to keep into your own storage — after that, `result_urls` is `null`.
+</Warning>
 
 ---
 
@@ -193,14 +243,10 @@ Each generation produces one or more `credits_logs` entries that trace the full 
 - `reserve` \+ `spend` → generation **completed** and credits were charged.
 - `reserve` \+ `release` → generation **failed** and the reserved credits were refunded.
 
-<Info>
-  `per_page` reflects the `limit` that was actually applied to the query (not necessarily what you passed). Always use `ceil(total / per_page)` to compute the total number of pages rather than `ceil(total / limit)`.
-</Info>
-
 ---
 
 ## Errors
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `status` is not one of `pending`, `completed`, or `failed` |
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, `status` is not one of `pending`/`completed`/`failed`, or `tool` is not one of `image`/`video`/`text` |

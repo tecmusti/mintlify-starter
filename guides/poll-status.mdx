@@ -73,7 +73,11 @@ A generation moves through up to three states:
 
 ## About `result_urls`
 
-The URLs in `result_urls` are **permanent, public-read** links hosted on estudjo's own object storage (`files.estudjo.com`) — never the AI provider's temporary URLs. You can serve them directly to end users or download them into your own storage; no authentication is needed to fetch them.
+The URLs in `result_urls` are **public-read** links on estudjo's own object storage (`files.estudjo.com`) — never the AI provider's temporary URLs. No authentication is needed to fetch them.
+
+<Warning>
+  Output files are kept for **14 days**. Download anything you need to keep into your own storage — after that, [GET /generations](/api/generations/history) returns `result_urls: null` for the generation.
+</Warning>
 
 What you get depends on the tool:
 

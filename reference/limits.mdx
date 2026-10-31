@@ -19,6 +19,8 @@ The estudjo API enforces a small set of hard limits. Keep these in mind when des
 | API key visibility | Shown once at creation | `POST /api-keys` response |
 | Output file retention | 14 days | `result_urls` — download files you need to keep |
 | Regenerate source age | 14 days or less | `POST /regenerate` |
+| Character grid size | 1 to 10 per side | `POST /characters` `grid` |
+| MCP wait for a result | Default 30 s, max 90 s | `wait_seconds` on MCP generation tools |
 | Video duration values | Per model — see `durations` in `GET /models` (plain numbers, no unit suffix) | `POST /generate` (video) |
 
 ## Pagination

@@ -1,0 +1,107 @@
+---
+title: "Manage your store and product visuals from chat"
+sidebarTitle: "Overview"
+description: "Connect Claude or another AI agent to estudjo over MCP to generate product images, videos and descriptions, and update your Shopify or ikas store from chat."
+icon: "sparkles"
+keywords:
+  - "mcp"
+  - "claude"
+  - "ai agent"
+  - "shopify"
+  - "ikas"
+  - "trendyol"
+  - "connector"
+---
+
+The estudjo MCP server lets an AI assistant such as Claude work with your estudjo account and your connected stores in plain conversation. Ask it to generate a product image, write a description in another language, or put the result straight onto a product in your Shopify or ikas store, and it calls estudjo for you, shows you the result, and keeps track of the credits it spends.
+
+<Columns cols={2}>
+  <Card title="Connect in a minute" icon="plug" href="/mcp/connect">
+    Add one URL to claude.ai, Claude Desktop or Claude mobile and sign in. No API key needed.
+  </Card>
+  <Card title="See every tool" icon="wrench" href="/mcp/tools">
+    What the assistant can do, which tools spend credits, and how results come back.
+  </Card>
+</Columns>
+
+## Your store, in the conversation
+
+Most AI image tools stop at the image. With estudjo, the assistant can also read and update the stores you connected to your estudjo account, so the whole job happens in one chat: find the product, create the visual or the copy, check it, and publish it to the store.
+
+<Columns cols={3}>
+  <Card title="Browse products" icon="store">
+    List products from your connected stores and open one in full: images, variants, price and stock.
+  </Card>
+  <Card title="Update listings" icon="file-pen">
+    Rewrite a product description, SEO title or meta description and save it to the live store.
+  </Card>
+  <Card title="Publish images" icon="image-plus">
+    Add a generated image to a product, either at the end of its gallery or as the new main image.
+  </Card>
+</Columns>
+
+| Store | Browse products | Update description and SEO | Add images |
+| --- | --- | --- | --- |
+| Shopify | Yes | Yes | Yes |
+| ikas | Yes | Yes | Yes |
+| Trendyol | Yes | No | No |
+
+<Warning>
+  Updating a product or adding an image changes your **live store** right away. A good assistant shows you what it is about to change first; review it before you confirm.
+</Warning>
+
+Connect your store in the estudjo dashboard before you start. The assistant can list which stores are connected and what each one supports.
+
+## What you can ask for
+
+These are examples of requests the assistant can carry out end to end with the estudjo tools.
+
+<AccordionGroup>
+  <Accordion title="Refresh a product's main photo" icon="camera">
+    "Find the red mini dress in my Shopify store, generate a studio photo of it on a white background, and make it the main image."
+
+    The assistant finds the product, uses its current photo as the source, generates a new image, shows it to you, and then sets it as the main image.
+  </Accordion>
+  <Accordion title="Write descriptions in another language" icon="languages">
+    "Write a Turkish product description and SEO title for my five newest ikas products and save them."
+
+    The assistant reads each product, generates the copy from the product images, and updates each listing's description and SEO fields.
+  </Accordion>
+  <Accordion title="Try a different look" icon="wand-sparkles">
+    "Use a lifestyle scene for this product, then make the background warmer."
+
+    The assistant generates an image with a scene, then regenerates it from that result with your change.
+  </Accordion>
+  <Accordion title="Check your credits" icon="wallet">
+    "How many credits do I have left, and which image model is the cheapest?"
+
+    The assistant checks your balance and the model's pricing before it spends anything.
+  </Accordion>
+</AccordionGroup>
+
+## How it works
+
+<Steps>
+  <Step title="Connect the assistant">
+    Add `https://api.estudjo.com/mcp` to your AI client and sign in to estudjo. See [Connect](/mcp/connect).
+  </Step>
+  <Step title="Ask in plain language">
+    The assistant picks the right tools: models, scenes, characters, your stores, and generation.
+  </Step>
+  <Step title="Review the result">
+    Finished images come back as previews and product descriptions as text, so the assistant can show and check them before you publish anything.
+  </Step>
+  <Step title="Publish or keep going">
+    Save the result to your store, regenerate with a change, or download it.
+  </Step>
+</Steps>
+
+## Credits and limits
+
+Generating images, videos, descriptions and regenerations spends credits from your estudjo wallet, at the same prices as the [API](/api/models/list). Browsing, store updates, characters and status checks are free. Every finished generation tells the assistant what it cost and what is left.
+
+When you connect through claude.ai, Claude Desktop or Claude mobile, you can give that connection a **24-hour credit limit** under **Connected apps** in the estudjo dashboard, and disconnect it there at any time.
+
+<Tip>
+  Building your own integration instead of chatting? The same features are available as a REST API. Start with the [Quickstart](/quickstart).
+</Tip>

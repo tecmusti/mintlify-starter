@@ -1,0 +1,60 @@
+---
+title: "Update One of Your Characters"
+sidebarTitle: "Update Character"
+description: "PUT /characters/{id}: change the name, ethnicity, description or gender of a character you created. Omitted fields keep their value; the image is fixed."
+---
+
+PUT `/characters/{id}` changes the details of a character you created. `name` is required; every other field is independent, so you can change one without touching the rest. The image can't be changed: create a new character for a new image.
+
+**PUT** `https://api.estudjo.com/characters/{id}`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+## Path parameters
+
+<ParamField path="id" type="string" required>
+  The character's `id` from [GET /my/characters](/api/characters/mine) or [POST /characters](/api/characters/create).
+</ParamField>
+
+## Request body
+
+<ParamField body="name" type="string" required>
+  Character name.
+</ParamField>
+
+<ParamField body="ethnicity" type="string">
+  Leave the key out to keep the current value, or send `""` to clear it.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Leave the key out to keep the current value, or send `""` to clear it.
+</ParamField>
+
+<ParamField body="gender" type="string">
+  `female`, `male`, or `kid`. Leave the key out to keep the current value, or send `""` to clear it.
+</ParamField>
+
+## Example request
+
+This changes `description` and keeps `ethnicity` and `gender` as they are:
+
+```bash
+curl -X PUT https://api.estudjo.com/characters/36bb3683-c8d9-4ccd-a74f-dc693e65f0eb \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{ "name": "My Mascot v2", "description": "An even better boy" }'
+```
+
+## Response
+
+The updated character, with the same fields as [POST /characters](/api/characters/create).
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_payload` | 400 | The body isn't valid JSON |
+| `invalid_input` | 400 | `name` is missing, or `gender` is given but isn't `female`/`male`/`kid` |
+| `not_found` | 404 | The `id` is unknown, belongs to a catalog character, or belongs to another account |

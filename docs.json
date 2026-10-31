@@ -52,6 +52,20 @@
         ]
       },
       {
+        "tab": "AI Agents",
+        "groups": [
+          {
+            "group": "MCP server",
+            "icon": "bot",
+            "pages": [
+              "mcp/overview",
+              "mcp/connect",
+              "mcp/tools"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API Reference",
         "groups": [
           {
@@ -105,7 +119,11 @@
           {
             "group": "Characters",
             "pages": [
-              "api/characters/list"
+              "api/characters/list",
+              "api/characters/mine",
+              "api/characters/create",
+              "api/characters/update",
+              "api/characters/delete"
             ]
           }
         ]

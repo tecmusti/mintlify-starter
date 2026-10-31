@@ -19,11 +19,11 @@ GET https://api.estudjo.com/scenes
 ## Query Parameters
 
 <ParamField query="category" type="string">
-  Filter by category slug (e.g. `womens-clothing`).
+  Filter by category slug (e.g. `womens-clothing`). An unknown slug returns `400 invalid_input`.
 </ParamField>
 
 <ParamField query="model" type="string">
-  Filter by full model identifier (e.g. `estudjo/economic-video`). URL-encode the slash as `%2F`.
+  Filter by full model identifier (e.g. `estudjo/economic-video`). URL-encode the slash as `%2F`. An unknown model returns `400 invalid_input`.
 </ParamField>
 
 <ParamField query="type" type="string">
@@ -153,4 +153,4 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, or `type` is not `user_created`. |
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, `type` is not `user_created`, or `category` / `model` doesn't match a known category or model. |

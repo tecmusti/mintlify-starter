@@ -1,0 +1,94 @@
+---
+title: "Create a Character from an Image"
+sidebarTitle: "Create Character"
+description: "POST /characters: create your own estudjo character from a public image URL, optionally splitting a grid image into variants. Free, no credits spent."
+---
+
+POST `/characters` creates your own character from a public image URL. estudjo downloads and processes the image before it responds, so the call can take a few seconds. Creating a character is free: no credits are spent.
+
+**POST** `https://api.estudjo.com/characters`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+## Request body
+
+<ParamField body="image" type="string" required>
+  Public URL of the character image.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Character name.
+</ParamField>
+
+<ParamField body="ethnicity" type="string">
+  Character ethnicity.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Free-text description.
+</ParamField>
+
+<ParamField body="gender" type="string">
+  `female`, `male`, or `kid`.
+</ParamField>
+
+<ParamField body="has_variants" type="boolean" default="false">
+  Set to `true` when `image` is a grid of several shots of the same character. The grid is split into one image per cell, read left to right, top to bottom.
+</ParamField>
+
+<ParamField body="grid" type="string" default="2x2">
+  Grid shape as `COLSxROWS`, for example `3x2` for 6 cells. 1 to 10 per side. Used only when `has_variants` is `true`.
+</ParamField>
+
+<ParamField body="crop" type="boolean" default="false">
+  Center-crop the single image to 3:4. Ignored when `has_variants` is `true`.
+</ParamField>
+
+<ParamField body="quality" type="integer" default="92">
+  JPEG quality of the stored images, 1 to 100.
+</ParamField>
+
+## Example request
+
+```bash
+curl -X POST https://api.estudjo.com/characters \
+  -H 'X-Api-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "image": "https://example.com/photo.jpg",
+    "name": "My Mascot",
+    "ethnicity": "Labrador",
+    "description": "A good boy",
+    "gender": "male"
+  }'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "36bb3683-c8d9-4ccd-a74f-dc693e65f0eb",
+    "image": "https://assets.estudjo.com/assets/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg",
+    "variants": ["https://assets.estudjo.com/assets/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg"],
+    "name": "My Mascot",
+    "ethnicity": "Labrador",
+    "description": "A good boy",
+    "gender": "male",
+    "type": "user"
+  }
+}
+```
+
+The response has the same fields as [GET /characters](/api/characters/list). `variants` holds one URL, or one per grid cell when `has_variants` is `true`; `image` is the first of them. To use the character in [POST /generate](/api/generations/generate), pass a `variants` URL, not the `id`.
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `invalid_payload` | 400 | The body isn't valid JSON |
+| `invalid_input` | 400 | `image` or `name` is missing, `gender` isn't `female`/`male`/`kid`, `grid` isn't `COLSxROWS` or is outside 1 to 10 per side, or `quality` is outside 1 to 100 |
+| `create_failed` | 500 | The image couldn't be downloaded or processed |

@@ -1,0 +1,38 @@
+---
+title: "Delete One of Your Characters"
+sidebarTitle: "Delete Character"
+description: "DELETE /characters/{id}: archive a character you created so it disappears from GET /characters and GET /my/characters. There is no restore."
+---
+
+DELETE `/characters/{id}` archives a character you created. It disappears from [GET /characters](/api/characters/list) and [GET /my/characters](/api/characters/mine) at once. There is no restore: create the character again if you need it back.
+
+**DELETE** `https://api.estudjo.com/characters/{id}`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+## Path parameters
+
+<ParamField path="id" type="string" required>
+  The character's `id`.
+</ParamField>
+
+## Example request
+
+```bash
+curl -X DELETE https://api.estudjo.com/characters/36bb3683-c8d9-4ccd-a74f-dc693e65f0eb \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+```json
+{ "success": true, "data": { "status": "archived" } }
+```
+
+## Errors
+
+| Code | HTTP | Cause |
+| --- | --- | --- |
+| `not_found` | 404 | The `id` is unknown, belongs to a catalog character, belongs to another account, or was already deleted |

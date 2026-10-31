@@ -1,0 +1,97 @@
+---
+title: "estudjo MCP tools, credits and result waiting"
+sidebarTitle: "Tools"
+description: "Reference for the 20 estudjo MCP tools: what each one does, which spend credits, how generation tools wait for results, and how credits are reported."
+icon: "wrench"
+keywords:
+  - "mcp"
+  - "tools"
+  - "wait_seconds"
+  - "credits"
+  - "generate_image"
+  - "upload_to_store"
+---
+
+The estudjo MCP server exposes 20 tools. Most map one to one to an estudjo [API](/introduction) endpoint, with the same validation, pricing and errors; the store tools are available only over MCP. Your AI client discovers them automatically, so you rarely call them by name, but this page explains what the assistant can do and how results come back.
+
+## Tools
+
+### Catalog
+
+| Tool | What it does | Credits |
+| --- | --- | --- |
+| `list_models` | Models with their options and pricing, descriptions as Markdown. Same as [GET /models](/api/models/list) | Free |
+| `list_categories` | Product categories and suggested models. Same as [GET /categories](/api/categories/list) | Free |
+| `list_scenes` | Predefined and your own scenes. Same as [GET /scenes](/api/scenes/list) | Free |
+
+### Characters
+
+| Tool | What it does | Credits |
+| --- | --- | --- |
+| `list_characters` | Curated and your own characters, or only yours | Free |
+| `create_character` | Create a character from an image URL. Same as [POST /characters](/api/characters/create) | Free |
+| `update_character` | Change a character's details; fields you leave out are kept | Free |
+| `delete_character` | Archive one of your characters | Free |
+
+Over MCP, each character's `variants` come back as objects with an `id`, a `body_type` (`Slim`, `Regular`, `Curvy`, `Plus`, `Plus+` or `Plus++`) and a `url`. To use a character in `generate_image`, pass a variant `id` or `url`, not the character's own `id`.
+
+### Generation
+
+| Tool | What it does | Credits |
+| --- | --- | --- |
+| `generate_image` | Generate a product image. Same as [POST /generate](/api/generations/generate) with an image model | **Spends credits** |
+| `generate_video` | Generate a product video, with a video model | **Spends credits** |
+| `generate_text` | Generate a product description, with a text model | **Spends credits** |
+| `regenerate_image` | New version of a generated image with a new prompt. Same as [POST /regenerate](/api/generations/regenerate) | **Spends credits** |
+| `get_generation_status` | Status and result of a generation. Same as [GET /status](/api/generations/status) | Free |
+| `list_recent_generations` | Your latest generations, for example to find a task after a network error | Free |
+| `get_upload_url` | A 15-minute, reusable URL the assistant uploads a local file to | Free |
+| `get_balance` | Your credit balance | Free |
+
+### Stores
+
+| Tool | What it does | Credits |
+| --- | --- | --- |
+| `list_integrations` | Your connected stores (Shopify, ikas, Trendyol), what each supports, and stores you can still connect | Free |
+| `list_store_products` | A page of products from one connected store (10 by default) | Free |
+| `get_store_product` | One product in full: images, variants, price and stock | Free |
+| `update_store_product` | Change a product's description, SEO title or meta description. Shopify and ikas only. **Changes the live store** | Free |
+| `upload_to_store` | Add an image to a product, at the end of its gallery or as the main image. Shopify and ikas only. **Changes the live store** | Free |
+
+## Tool arguments
+
+Tool arguments use snake_case where the REST API uses other names, for example `aspect_ratio` for `aspect-ratio`, `scene_id` for `scene`, and `file_id` for `fileId`. Everything else, including allowed values and pricing, matches the REST endpoint.
+
+## Waiting for results
+
+The generation tools and `get_generation_status` take a `wait_seconds` argument: `30` by default, at most `90`, and `0` to return immediately.
+
+- If the generation finishes within that time, the tool returns the result: each output file's `url` and `file_id` (what `regenerate_image` takes), plus a preview of each image (JPEG, at most 1024 px on the longest side) or the full Markdown of a product description. Videos come back as a URL only.
+- If time runs out first, the tool returns `status: "pending"` and the `task_id`. The assistant passes it to `get_generation_status` to keep waiting.
+
+The generation keeps running either way, so nothing is lost if the assistant stops waiting.
+
+## Credits in results
+
+A finished generation also reports what it cost and what is left:
+
+```json
+"credits": {
+  "spent": 4,
+  "balance": 11719.5,
+  "app_limit_24h": 20,
+  "app_spent_24h": 4,
+  "app_remaining_24h": 16
+}
+```
+
+The `app_*` fields appear only for connections made with OAuth (claude.ai, Claude Desktop, Claude mobile). They describe the 24-hour credit limit you set for that connection under **Connected apps**; `null` means no limit. `get_balance` returns the same object without `spent`.
+
+## Errors
+
+A failed tool call comes back as a tool error that carries the same `code` as the REST API, for example `insufficient_credits: insufficient credits`. See [Error codes](/reference/error-codes). Two codes are specific to MCP:
+
+| Code | Meaning |
+| --- | --- |
+| `spend_limit_reached` | The connection reached its 24-hour credit limit |
+| `not_supported` | The store doesn't support that action, for example updating a Trendyol product |

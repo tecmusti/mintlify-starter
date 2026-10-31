@@ -1,0 +1,108 @@
+---
+title: "Connect Claude, Cursor or VS Code to estudjo"
+sidebarTitle: "Connect"
+description: "Add the estudjo MCP server to claude.ai, Claude Desktop, Claude mobile, Claude Code, Cursor, VS Code or Windsurf, with OAuth sign-in or an API key."
+icon: "plug"
+keywords:
+  - "mcp"
+  - "claude"
+  - "connector"
+  - "oauth"
+  - "claude code"
+  - "cursor"
+  - "vs code"
+---
+
+The estudjo MCP server lives at `https://api.estudjo.com/mcp`. Claude apps connect with a sign-in and no API key; developer tools such as Claude Code, Cursor and VS Code connect with an API key sent as a Bearer token. Pick your client below.
+
+## claude.ai, Claude Desktop and Claude mobile
+
+These clients connect with OAuth: you sign in to estudjo once and approve the connection.
+
+<Steps>
+  <Step title="Add a custom connector">
+    In Claude, open **Settings > Connectors**, add a custom connector, and enter the URL:
+
+    ```text
+    https://api.estudjo.com/mcp
+    ```
+  </Step>
+  <Step title="Sign in and approve">
+    Claude opens the estudjo sign-in page. Sign in and approve the connection.
+  </Step>
+  <Step title="Start a chat">
+    The estudjo tools are now available in your conversations. Try: "What's my estudjo credit balance?"
+  </Step>
+</Steps>
+
+Each connection appears under **Connected apps** in the estudjo dashboard. There you can set a 24-hour credit limit for it or disconnect it.
+
+## Developer tools (API key)
+
+Claude Code, Cursor, VS Code and Windsurf connect with your estudjo API key, passed in the `Authorization` header.
+
+<Info>
+  Create a dedicated key for this, for example named "Claude MCP", so you can revoke it without affecting your other integrations. See [Authentication](/authentication). The MCP server only accepts `Authorization: Bearer`; the `X-Api-Key` header is not accepted on `/mcp`.
+</Info>
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http estudjo https://api.estudjo.com/mcp \
+      --header "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Cursor, VS Code, Windsurf">
+    Add an HTTP MCP server with the URL and an `Authorization` header, using your editor's config format:
+
+    ```json
+    {
+      "mcpServers": {
+        "estudjo": {
+          "url": "https://api.estudjo.com/mcp",
+          "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Claude Desktop with an API key">
+    If you prefer an API key over signing in, use the `mcp-remote` proxy (requires Node.js) in `claude_desktop_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "estudjo": {
+          "command": "npx",
+          "args": ["-y", "mcp-remote", "https://api.estudjo.com/mcp", "--header", "Authorization:${ESTUDJO_AUTH}"],
+          "env": { "ESTUDJO_AUTH": "Bearer YOUR_API_KEY" }
+        }
+      }
+    }
+    ```
+
+    The header value lives in `env` because some clients split arguments that contain a space.
+  </Tab>
+</Tabs>
+
+## Using local images
+
+Every image you give the assistant must be a public URL. To use a file from your computer, the assistant asks estudjo for a short-lived upload URL and uploads the file there itself, so it needs to be able to run commands or make HTTP requests.
+
+- **Claude Code, Cursor:** works out of the box.
+- **claude.ai and Claude Desktop with code execution:** allow our domain once under **Settings > Capabilities > code execution network access > allowed domains** and add `api.estudjo.com`. On Team and Enterprise plans an admin may need to do this. Without it, the upload fails with a network error.
+- **Clients without a shell or code execution:** use public image URLs, or upload the image in the estudjo app first.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="401 when connecting with an API key">
+    The key is missing, wrong or revoked, or it was sent as `X-Api-Key`. Send it as `Authorization: Bearer YOUR_API_KEY`.
+  </Accordion>
+  <Accordion title="Generations stop with spend_limit_reached">
+    The connection reached the 24-hour credit limit you set under **Connected apps**. Raise or remove the limit there, or wait for the window to roll over.
+  </Accordion>
+  <Accordion title="Need help?">
+    Email [support@estudjo.com](mailto:support@estudjo.com) with the client you use and the error the assistant reported.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,43 @@
+---
+title: "List Your Own Characters"
+sidebarTitle: "My Characters"
+description: "GET /my/characters: list only the characters you created in estudjo, newest first, with their image variants and gender. The curated catalog is excluded."
+---
+
+GET `/my/characters` returns only the characters you created with [POST /characters](/api/characters/create). The curated catalog never appears here. Use it to manage your own characters; use [GET /characters](/api/characters/list) to browse everything you can generate with.
+
+**GET** `https://api.estudjo.com/my/characters`
+
+<ParamField header="X-Api-Key" type="string" required>
+  Your estudjo API key.
+</ParamField>
+
+This endpoint takes no query parameters and no `X-USER-LANG` filtering.
+
+## Example request
+
+```bash
+curl https://api.estudjo.com/my/characters \
+  -H 'X-Api-Key: YOUR_API_KEY'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "36bb3683-c8d9-4ccd-a74f-dc693e65f0eb",
+      "image": "https://assets.estudjo.com/assets/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg",
+      "variants": ["https://assets.estudjo.com/assets/dd42588f-c352-4d10-a6dd-756d69e8dbe6.jpg"],
+      "name": "My Mascot",
+      "ethnicity": "Labrador",
+      "description": "A good boy",
+      "gender": "male"
+    }
+  ]
+}
+```
+
+Each item has the same fields as [GET /characters](/api/characters/list), without `type`: every item here is yours. Items are sorted newest first. An account with no characters gets `"data": []`.

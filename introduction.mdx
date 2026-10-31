@@ -6,6 +6,10 @@ description: "estudjo is a REST API for generating AI product images, videos, an
 
 estudjo is a REST API that turns your product photos into studio-quality marketing images, short cinematic videos, and ready-to-publish product descriptions. Instead of expensive photo shoots or manual copywriting, you send your product image URLs along with a scene or your own prompt, and estudjo's AI models handle the rest — returning ready-to-use output URLs you can download into your storefront, ads, or CMS.
 
+<Card title="Prefer to chat? Use estudjo from Claude" icon="bot" horizontal href="/mcp/overview">
+  Connect Claude to estudjo over MCP to generate visuals and update your Shopify or ikas store in plain conversation.
+</Card>
+
 ## What you can build
 
 <CardGroup cols={2}>
@@ -97,3 +101,8 @@ estudjo is a REST API that turns your product photos into studio-quality marketi
 | `PUT` | [`/scenes/{scene_id}`](/api/scenes/update) | Update one of your scenes |
 | `DELETE` | [`/scenes/{scene_id}`](/api/scenes/delete) | Archive one of your scenes |
 | `GET` | [`/characters`](/api/characters/list) | List curated and your own characters |
+| `GET` | [`/my/characters`](/api/characters/mine) | List only your own characters |
+| `POST` | [`/characters`](/api/characters/create) | Create a character from an image URL |
+| `PUT` | [`/characters/{id}`](/api/characters/update) | Update one of your characters |
+| `DELETE` | [`/characters/{id}`](/api/characters/delete) | Delete one of your characters |
+| `POST` | [`/mcp`](/mcp/overview) | MCP server for AI agents such as Claude |

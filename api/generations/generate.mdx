@@ -47,7 +47,7 @@ POST `/generate` queues an AI generation job. The model you specify determines w
     </ParamField>
 
     <ParamField body="characters" type="string[]">
-      Character UUIDs from [GET /characters](/api/characters/list) and/or direct image URLs. Only used when the chosen scene supports characters — the `characters` count in [GET /scenes](/api/scenes/list) tells you how many a scene expects (`0` means it doesn't use them).
+      Character images for scenes that feature people: variant URLs or variant IDs from [GET /characters](/api/characters/list), or other public image URLs. The character's own `id` is not accepted. Only used when the chosen scene supports characters: the `characters` count in [GET /scenes](/api/scenes/list) tells you how many it expects (`0` means none). Unrecognized entries and empty slots are filled with random catalog characters. See [Using a character in a generation](/api/characters/list#using-a-character-in-a-generation).
     </ParamField>
 
     <ParamField body="additional_data" type="object">

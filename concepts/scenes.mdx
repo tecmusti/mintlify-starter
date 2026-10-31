@@ -51,9 +51,9 @@ Predefined scenes also carry category associations. To find scenes that work wit
 
 ## Scenes and Characters
 
-Some scenes place one or more people (characters) in the shot. The `characters` field in `GET /scenes` tells you how many character images a scene expects — `0` means the scene doesn't use characters. For a scene that does, pass that many entries in the `characters` array of an image `POST /generate` request, using character UUIDs from [GET /characters](/api/characters/list) or direct image URLs.
+Some scenes place one or more people (characters) in the shot. The `characters` field in `GET /scenes` tells you how many character images a scene expects — `0` means the scene doesn't use characters. For a scene that does, pass that many entries in the `characters` array of an image `POST /generate` request, using character variant URLs from [GET /characters](/api/characters/list) (not the character's own `id`) or other public image URLs. Slots you leave empty are filled with random catalog characters.
 
-When you create or update your own scene, set `characters` to the number of character images it should take.
+When you create or update your own scene, set `characters` to the number of character images it should take. You can also create your own characters with [POST /characters](/api/characters/create).
 
 ## Using a Prompt Instead of a Scene
 

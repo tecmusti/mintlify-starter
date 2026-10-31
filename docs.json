@@ -52,10 +52,10 @@
         ]
       },
       {
-        "tab": "AI Agents",
+        "tab": "MCP Server",
         "groups": [
           {
-            "group": "MCP server",
+            "group": "Get started",
             "icon": "bot",
             "pages": [
               "mcp/overview",

@@ -4,7 +4,7 @@ sidebarTitle: "List Scenes"
 description: "GET /scenes — list predefined and user-created scenes. Filter by category, model, or type. Returns scene_id, name, and type for each result."
 ---
 
-GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Only `name`, `scene_id`, `type`, `preview_image`, `previews`, and `characters` are returned here — use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
+GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Some scenes come in several **variants** (for example different poses in the same setting); each variant is listed as its own item with its own `scene_id`, so you can pass it straight to `POST /generate`. Only `name`, `scene_id`, `type`, `tool`, `preview_image`, `previews`, and `characters` are returned here. Use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
 
 ## Endpoint
 
@@ -55,16 +55,17 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
   "data": {
     "scenes": [
       {
-        "name": { "en": "Lit-Modern Room", "tr": "Aydınlık Modern Oda", "es": "Habitación Moderna" },
+        "name": { "en": "Bedroom Morning Routine – Seated On Bed", "tr": "Sabah Rutini – Yatakta Oturuş" },
         "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32",
         "type": "predefined",
-        "preview_image": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
+        "tool": "video",
+        "preview_image": "https://files.estudjo.com/assets/fefda6be-52ed-4dfa-b688-c1788c9803d1.jpeg",
         "previews": [
           {
-            "thumbnail": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
-            "url": "https://files.estudjo.com/scene-previews/54fde974-7b3a-4cda-bec3-b82aed8ddb32/main.jpg",
-            "category": "womens-clothing",
-            "model": "estudjo/economic"
+            "category": "lingerie",
+            "model": "estudjo/economic-video",
+            "image": "https://files.estudjo.com/assets/fefda6be-52ed-4dfa-b688-c1788c9803d1.jpeg",
+            "video": "https://files.estudjo.com/assets/002fbef1-7933-4253-bb21-24c846c91552.mp4"
           }
         ],
         "characters": 1
@@ -73,6 +74,7 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
         "name": { "en": "Grand Historic Interior" },
         "scene_id": "59b4a671-1b90-453e-92c3-a28ceee177af",
         "type": "user_created",
+        "tool": "image",
         "preview_image": null,
         "previews": [],
         "characters": 0
@@ -90,31 +92,35 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 
   <Expandable title="Scene object">
     <ResponseField name="name" type="object">
-      Map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). Omitted entirely for a scene with no translations (rare).
+      Map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). For a scene with several variants it reads `"Scene name – Variant name"`; for a single-variant scene it is just the scene name. Omitted entirely for a scene with no translations (rare).
     </ResponseField>
 
     <ResponseField name="scene_id" type="string">
-      UUID uniquely identifying the scene.
+      UUID identifying this scene variant. Pass it as `scene` in `POST /generate`, and use it in the scene detail, update, and delete endpoints.
     </ResponseField>
 
     <ResponseField name="type" type="string">
       Either `predefined` (estudjo-provided) or `user_created` (owned by your account).
     </ResponseField>
 
+    <ResponseField name="tool" type="string">
+      Which kind of generation the scene is for: `image`, `video`, `text`, or `scrape`.
+    </ResponseField>
+
     <ResponseField name="preview_image" type="string | null">
-      URL of the scene's main preview image, or `null` if it has none.
+      URL of the main preview image: the first preview's `image`, or the scene's own preview image when the variant has no previews. `null` if neither exists.
     </ResponseField>
 
     <ResponseField name="previews" type="array">
       Example outputs for the scene, in display order. `[]` when there are none. Narrowed by the `category` query parameter (but not by `model`).
 
       <Expandable title="Preview object">
-        <ResponseField name="thumbnail" type="string">
-          Thumbnail URL.
+        <ResponseField name="image" type="string">
+          Preview image URL.
         </ResponseField>
 
-        <ResponseField name="url" type="string">
-          Full-size file URL. May point to a video in the future, not only images.
+        <ResponseField name="video" type="string">
+          Preview video URL. Present only when the preview has a video (video scenes); omitted otherwise.
         </ResponseField>
 
         <ResponseField name="category" type="string">
@@ -142,7 +148,7 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 </ResponseField>
 
 <ResponseField name="total" type="integer">
-  Total number of scenes matching the query across all pages.
+  Total number of items (scene variants) matching the query across all pages.
 </ResponseField>
 
 <Info>

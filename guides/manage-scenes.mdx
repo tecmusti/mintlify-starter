@@ -17,7 +17,7 @@ Custom scenes let you define reusable prompt templates scoped to specific AI mod
       -H 'X-Api-Key: YOUR_API_KEY'
     ```
 
-    Each entry in the response includes `name` (a language-code → translated-name map), `scene_id`, `type` (`predefined` or `user_created`), `preview_image`, `previews`, and `characters`. Add `?type=user_created` to list only your own scenes.
+    Each entry in the response includes `name` (a language-code → translated-name map), `scene_id`, `type` (`predefined` or `user_created`), `tool`, `preview_image`, `previews`, and `characters`. A scene with several variants appears once per variant, each with its own `scene_id`. Add `?type=user_created` to list only your own scenes.
   </Step>
   <Step title="Inspect a scene">
     To view the full details of a scene you created — including its `description` and `prompt` — fetch it by ID. This endpoint is only available for `user_created` scenes.

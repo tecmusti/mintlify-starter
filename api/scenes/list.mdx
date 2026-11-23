@@ -4,7 +4,7 @@ sidebarTitle: "List Scenes"
 description: "GET /scenes — list predefined and user-created scenes. Filter by category, model, or type. Returns scene_id, name, and type for each result."
 ---
 
-GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Some scenes come in several **variants** (for example different poses in the same setting); each variant is listed as its own item with its own `scene_id`, so you can pass it straight to `POST /generate`. Only `name`, `scene_id`, `type`, `tool`, `preview_image`, `previews`, and `characters` are returned here. Use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
+GET /scenes returns both predefined (estudjo-provided) and user-created scenes. Some scenes come in several **variants** (for example different poses in the same setting); each variant is listed as its own item with its own `scene_id`, so you can pass it straight to `POST /generate`. Only `name`, `scene_id`, `type`, `tool`, `url`, `preview_image`, `previews`, and `characters` are returned here. Use [GET /scenes/\{scene_id\}](/api/scenes/get) for full details of your own scenes.
 
 ## Endpoint
 
@@ -26,6 +26,14 @@ GET https://api.estudjo.com/scenes
   Filter by full model identifier (e.g. `estudjo/economic-video`). URL-encode the slash as `%2F`. An unknown model returns `400 invalid_input`.
 </ParamField>
 
+<ParamField query="tool" type="string">
+  Only scenes for this kind of generation: `image`, `video`, `text`, or `scrape`. Use `image` for scenes to pass to an image generation and `video` for a video generation. An unknown value returns `400 invalid_input`.
+</ParamField>
+
+<ParamField query="lang" type="string">
+  2-letter language code (e.g. `tr`). When set, `name` is returned as a single string in that language instead of the full language map, and each `url` uses that language. If a scene has no name in that language (or the code isn't a known language), English is used for both. If `lang` is not set, the `X-USER-LANG` header is used the same way.
+</ParamField>
+
 <ParamField query="type" type="string">
   Pass `user_created` to list only your own scenes. Any other value returns `400`.
 </ParamField>
@@ -41,7 +49,7 @@ GET https://api.estudjo.com/scenes
 ## Example Request
 
 ```bash
-curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&limit=50' \
+curl 'https://api.estudjo.com/scenes?category=womens-clothing&tool=image&limit=50' \
   -H 'X-Api-Key: YOUR_API_KEY'
 ```
 
@@ -59,6 +67,7 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
         "scene_id": "54fde974-7b3a-4cda-bec3-b82aed8ddb32",
         "type": "predefined",
         "tool": "video",
+        "url": "https://www.estudjo.com/en/scenes/video-bedroom-morning-routine",
         "preview_image": "https://files.estudjo.com/assets/fefda6be-52ed-4dfa-b688-c1788c9803d1.jpeg",
         "previews": [
           {
@@ -91,8 +100,8 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
   Array of scene objects matching your query.
 
   <Expandable title="Scene object">
-    <ResponseField name="name" type="object">
-      Map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). For a scene with several variants it reads `"Scene name – Variant name"`; for a single-variant scene it is just the scene name. Omitted entirely for a scene with no translations (rare).
+    <ResponseField name="name" type="object | string">
+      A single string when `lang` or `X-USER-LANG` is given; otherwise a map of language code → translated name (e.g. `{ "en": "...", "tr": "..." }`). For a scene with several variants it reads `"Scene name – Variant name"`; for a single-variant scene it is just the scene name. Omitted entirely for a scene with no translations (rare).
     </ResponseField>
 
     <ResponseField name="scene_id" type="string">
@@ -105,6 +114,10 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 
     <ResponseField name="tool" type="string">
       Which kind of generation the scene is for: `image`, `video`, `text`, or `scrape`.
+    </ResponseField>
+
+    <ResponseField name="url" type="string">
+      Link to the scene's page on estudjo.com, in the `lang` language (English by default). Present only for `predefined` scenes.
     </ResponseField>
 
     <ResponseField name="preview_image" type="string | null">
@@ -159,4 +172,4 @@ curl 'https://api.estudjo.com/scenes?category=womens-clothing&type=user_created&
 
 | Code | HTTP | Cause |
 | --- | --- | --- |
-| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, `type` is not `user_created`, or `category` / `model` doesn't match a known category or model. |
+| `invalid_input` | 400 | `page` is not a positive integer, `limit` is outside `1`–`250`, `type` is not `user_created`, or `category` / `model` / `tool` doesn't match a known category, model, or tool. |
